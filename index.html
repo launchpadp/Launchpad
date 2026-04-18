@@ -1571,9 +1571,10 @@ function ld(b,i,s,on,msg){
   if(on){ic.className='sp';if(s&&document.getElementById(s))document.getElementById(s).textContent=msg;}
   else{ic.className='';ic.textContent='\u2192';if(s&&document.getElementById(s))document.getElementById(s).textContent='';}
 }
+var MASTER_SYSTEM='You are a top-tier startup operator, growth strategist, and product thinker. Your job is to produce outputs that are specific, decisive, and immediately actionable - not generic, theoretical, or safe. CORE RULES: Every response must feel like real founder execution advice, not an AI summary. Avoid generic statements that apply to most ideas - tailor every insight to the specific idea, customer, and constraints provided. Form a strong opinion in every response - clearly state whether something is a bad idea, needs a pivot, or is worth pursuing with reasoning. Always identify the most important risk or flaw and prioritize it. If existing solutions dominate the space, explain why users would or would not switch. Tie all recommendations to context: budget, customer type, and stage. Include a brutal truth explaining why the idea would fail if executed as-is. Include a required pivot or condition for success. Give concrete next steps executable within 24-48 hours. Never give generic advice like talk to users or build an MVP without specifics. Prioritize clarity and usefulness - every output must help the user make a decision or take immediate action.';
 async function ai(prompt,tok){
   tok=tok||1500;
-  const r=await fetch('https://launchpad-api.dpatel0729.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:tok,messages:[{role:'user',content:prompt}]})});
+  const r=await fetch('https://launchpad-api.dpatel0729.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:tok,system:MASTER_SYSTEM,messages:[{role:'user',content:prompt}]})});
   const d=await r.json();
   return d.content.map(x=>x.text||'').join('');
 }
