@@ -3132,10 +3132,10 @@ async function sendRefine(containerId, chipText) {
   history.scrollTop = history.scrollHeight;
 
   try {
-    var prompt = 'You previously generated this output for a founder:\n\n'
-      + '---\nTool: ' + ctx.toolName + '\nIdea: "' + ctx.idea + '"\n\nOriginal output:\n' + ctx.lastOutput + '\n---\n\n'
-      + 'The founder wants you to: "' + userMsg + '"\n\n'
-      + 'Regenerate the output incorporating their feedback. Keep the same structure and quality. Be specific and actionable. Write like a founder talking to a founder.';
+    var safeOut = (ctx.lastOutput||'').slice(0,1500).replace(/[\x00-\x1F]/g,' ');
+    var safeIdea = (ctx.idea||'').slice(0,200);
+    var safeMsg = (userMsg||'').slice(0,300);
+    var prompt = 'Elite startup advisor. Tool: '+ctx.toolName+'. Idea: '+safeIdea+'. Previous output: '+safeOut+'. Founder feedback: '+safeMsg+'. Regenerate incorporating their feedback. Same quality and structure. Specific, direct, actionable. Write like a founder to a founder.';
 
     var txt = await ai(prompt, 1200);
     ctx.lastOutput = txt;
