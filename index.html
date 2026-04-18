@@ -1855,7 +1855,20 @@ async function runV(){
 
     document.getElementById('vres').innerHTML=html;
     document.getElementById('vres').style.display='block';
-    setTimeout(()=>{const g=document.getElementById('gf');if(g)g.style.width=d.score+'%';},100);
+    setTimeout(()=>{
+      // Animate score bar
+      const g=document.getElementById('gf');if(g)g.style.width=d.score+'%';
+      // Animate score counter
+      const sn=document.getElementById('vScoreNum');
+      if(sn){
+        var target=d.score;var cur=0;
+        var inc=setInterval(function(){
+          cur+=3;
+          if(cur>=target){cur=target;clearInterval(inc);}
+          sn.textContent=cur;
+        },18);
+      }
+    },100);
   }catch(err){
     document.getElementById('vres').innerHTML='<p style="color:var(--txt2);font-size:13px;padding:1rem 0">Something went wrong — please try again.</p>';
     document.getElementById('vres').style.display='block';
