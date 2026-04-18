@@ -1385,10 +1385,71 @@ function closeTool(){document.getElementById('toolMo').classList.remove('open');
 function closeBgT(e){if(e.target===document.getElementById('toolMo'))closeTool();}
 
 // ── FORMS ────────────────────────────────────────────
+function getUserContext() {
+  try {
+    var ob = JSON.parse(localStorage.getItem('lp_ob')||'{}');
+    var ctx = {
+      stage: ob.stage || 'idea',
+      goal: ob.goal || 'validate',
+      budget: ob.budget || 'bootstrap',
+      ambition: ob.ambition || 'startup'
+    };
+    return ctx;
+  } catch(e) { return {stage:'idea',goal:'validate',budget:'bootstrap',ambition:'startup'}; }
+}
+
+function getContextBar() {
+  var ctx = getUserContext();
+  var stageLabel = {idea:'Idea Stage',build:'Building',launch:'Launched',scale:'Scaling'}[ctx.stage]||'Early Stage';
+  var budgetLabel = {zero:'$0 budget',bootstrap:'Bootstrapped',funded:'Funded',enterprise:'Enterprise'}[ctx.budget]||'Bootstrapped';
+  return '<div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.12);border-radius:var(--r);padding:.625rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
+    +'<span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--txt3)">Your profile:</span>'
+    +'<span style="font-size:11px;color:var(--acc);background:rgba(37,99,235,.1);padding:2px 10px;border-radius:99px">'+stageLabel+'</span>'
+    +'<span style="font-size:11px;color:var(--txt2);background:var(--sur);padding:2px 10px;border-radius:99px">'+budgetLabel+'</span>'
+    +'<a onclick="showContextEditor()" style="font-size:11px;color:var(--txt3);cursor:pointer;margin-left:auto;text-decoration:underline">Edit</a>'
+    +'</div>';
+}
+
+function showContextEditor() {
+  var ctx = getUserContext();
+  var html = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:700;display:flex;align-items:center;justify-content:center" id="ctxModal">'
+    +'<div style="background:var(--ink2);border:1px solid var(--bdr2);border-radius:var(--rxl);padding:2rem;max-width:420px;width:100%;margin:1rem">'
+    +'<h3 style="font-family:serif;font-size:1.4rem;color:#fff;margin-bottom:1rem">Your founder profile</h3>'
+    +'<div class="field"><div class="fl">Budget for growth</div>'
+    +'<select id="ctxBudget" style="width:100%"><option value="zero" '+(ctx.budget==='zero'?'selected':'')+'>$0 — Bootstrapping with no budget</option><option value="bootstrap" '+(ctx.budget==='bootstrap'?'selected':'')+'>Under $500/mo</option><option value="funded" '+(ctx.budget==='funded'?'selected':'')+'>$500 - $10K/mo</option><option value="enterprise" '+(ctx.budget==='enterprise'?'selected':'')+'>$10K+/mo</option></select></div>'
+    +'<div class="field"><div class="fl">Who are your customers?</div>'
+    +'<select id="ctxAmbition"><option value="consumer" '+(ctx.ambition==='consumer'?'selected':'')+'>Consumers / general public</option><option value="smb" '+(ctx.ambition==='smb'?'selected':'')+'>Small businesses</option><option value="startup" '+(ctx.ambition==='startup'?'selected':'')+'>Startups / founders</option><option value="enterprise" '+(ctx.ambition==='enterprise'?'selected':'')+'>Enterprise / corporate</option></select></div>'
+    +'<div style="display:flex;gap:8px;margin-top:1rem">'
+    +'<button onclick="saveContext()" style="flex:1;background:var(--blue);color:#fff;border:none;padding:11px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer">Save</button>'
+    +'<button onclick="closeCtxModal()" style="background:var(--sur);color:var(--txt);border:1px solid var(--bdr2);padding:11px 20px;border-radius:99px;font-size:13px;cursor:pointer">Cancel</button>'
+    +'</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeCtxModal() { var m = document.getElementById("ctxModal"); if(m) m.remove(); }
+function saveContext() {
+  var ctx = getUserContext();
+  ctx.budget = document.getElementById('ctxBudget').value;
+  ctx.ambition = document.getElementById('ctxAmbition').value;
+  localStorage.setItem('lp_ob', JSON.stringify(ctx));
+  document.getElementById('ctxModal').remove();
+  // Refresh current tool form
+  var currentTool = document.getElementById('toolTitle');
+  if(currentTool) {
+    var toolId = currentTool.getAttribute('data-tool-id');
+    if(toolId) {
+      var body = document.getElementById('toolBody');
+      var mem = null;
+      try { var m = JSON.parse(localStorage.getItem('lp_mem')||'{}'); mem = m[toolId]; } catch(e){}
+      if(body) body.innerHTML = getForm(toolId, mem);
+    }
+  }
+}
+
 function getForm(id,mem){
   const memNote=mem?'<div style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:var(--r);padding:.625rem .875rem;margin-bottom:1rem;font-size:12px;color:rgba(196,181,253,.85);display:flex;align-items:center;gap:8px"><svg width="13" height="13" viewBox="0 0 24 24" stroke="#C4B5FD" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Using context from your last session: <strong style="color:#C4B5FD">"'+mem.slice(0,45)+(mem.length>45?'...':'')+'"</strong></div>':'';
   const sharedTA=(fid,ph)=>'<div class="field"><div class="fl">Your business idea</div><textarea id="'+fid+'" placeholder="'+ph+'">'+(mem||'')+'</textarea></div>';
-  if(id==='validate')return`
+  if(id==='validate')return getContextBar()+`
     ${mem?memNote:''}
     <div class="eps">
       <div class="ep" onclick="set('vid','An AI tool that writes personalized cold emails for B2B sales teams based on LinkedIn profiles')">B2B AI email tool</div>
@@ -1409,7 +1470,7 @@ function getForm(id,mem){
     <div class="srow"><button class="brun" id="cbtn" onclick="runC()"><span id="ci">&rarr;</span> Compare ideas</button><span class="stm" id="cm"></span></div>
     <div id="cres" style="display:none;margin-top:1.1rem"></div>`;
 
-  if(id==='pitch')return`
+  if(id==='pitch')return getContextBar()+`
     ${memNote}
     ${sharedTA('pid','Describe your business idea...')}
     <div class="g2">
@@ -1419,7 +1480,7 @@ function getForm(id,mem){
     <div class="srow"><button class="brun" id="pbtn" onclick="runP()"><span id="pi">&rarr;</span> Generate pitch</button><span class="stm" id="pm"></span></div>
     <div id="pres" style="display:none"></div>`;
 
-  if(id==='gtm')return`
+  if(id==='gtm')return getContextBar()+`
     ${memNote}
     ${sharedTA('gid','Describe your business idea...')}
     <div class="g2">
@@ -1455,7 +1516,7 @@ function getForm(id,mem){
     <div class="srow"><button class="brun" id="f10btn" onclick="runF10()"><span id="f10i">&rarr;</span> Find my first 10 customers</button><span class="stm" id="f10m"></span></div>
     <div id="f10res" style="display:none"></div>`;}
 
-  if(id==='bizplan')return`
+  if(id==='bizplan')return getContextBar()+`
     ${memNote}
     ${sharedTA('bid','Describe your business idea in detail...')}
     <div class="g2">
@@ -1465,7 +1526,7 @@ function getForm(id,mem){
     <div class="srow"><button class="brun" id="bbtn" onclick="runB()"><span id="bi">&rarr;</span> Generate business plan</button><span class="stm" id="bm"></span></div>
     <div id="bres" style="display:none"></div>`;
 
-  if(id==='email')return`
+  if(id==='email')return getContextBar()+`
     ${memNote}
     ${sharedTA('eid','What are you building and what traction do you have so far...')}
     <div class="g2">
@@ -1475,7 +1536,7 @@ function getForm(id,mem){
     <div class="srow"><button class="brun" id="ebtn" onclick="runE()"><span id="ei">&rarr;</span> Write investor email</button><span class="stm" id="em"></span></div>
     <div id="eres" style="display:none"></div>`;
 
-  if(id==='kill')return`
+  if(id==='kill')return getContextBar()+`
     ${memNote}
     <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);border-radius:var(--r);padding:.75rem 1rem;margin-bottom:1.1rem;font-size:13px;color:rgba(252,165,165,.85);line-height:1.6;font-weight:300">
       <strong style="color:#FCA5A5;font-weight:500">Warning: brutal honesty mode.</strong> This tool tries its hardest to destroy your idea. If it survives, you know it's real.
@@ -1485,7 +1546,7 @@ function getForm(id,mem){
     <div class="srow"><button class="brun" id="kbtn" onclick="runK()" style="background:linear-gradient(135deg,#DC2626,#B91C1C);box-shadow:0 0 18px rgba(220,38,38,.3)"><span id="ki">&rarr;</span> Kill my idea</button><span class="stm" id="km"></span></div>
     <div id="kres" style="display:none"></div>`;
 
-  if(id==='funding')return`
+  if(id==='funding')return getContextBar()+`
     ${memNote}
     ${sharedTA('fid','Describe your startup - what you built, who your customers are, what traction you have...')}
     <div class="g2">
@@ -1829,7 +1890,30 @@ async function runP(){
   ld('pbtn','pi','pm',true,'Writing pitch...');
   document.getElementById('pres').style.display='none';
   try{
-    const txt=await ai('You are an elite pitch coach who has helped founders raise millions and close enterprise deals. Write a '+val('pst')+' for this idea. Tone: '+val('pto')+'.\n\nGLOBAL RULES - non-negotiable:\n- Write like a founder talking to a founder. Sharp. Direct. Slightly aggressive.\n- No corporate language. No generic advice. No telling them to leverage social media\n- Assume low budget, no connections, limited time.\n- Prioritize speed over perfection. Revenue over polish.\n- Every line must cause action or be cut.\n- Make it feel like insider knowledge, not ChatGPT output.\n\nOUTPUT STRUCTURE:\n\nTHE PITCH\n[Write it. Word for word. No labels, no intro. Hook in the first 5 words. Every sentence earns its place. End with a specific ask or call to action.]\n\nWHY THIS PITCH WORKS\n[2-3 sentences explaining the psychological mechanics - what makes someone say yes to this specifically.]\n\nWHAT TO SAY IF THEY PUSH BACK\n[3 common objections + exact word-for-word responses. Sharp, confident, not defensive.]\n\nSCRIPT VARIATION\n[A shorter, more casual version they can use in a DM or text. Under 50 words.]\n\nIdea: "'+idea+'"');
+    const ctx=getUserContext();
+  const txt=await ai(
+    'You are an elite pitch advisor who has helped founders raise from Sequoia, a16z, and Y Combinator. You write pitches that get responses because they are specific, credible, and impossible to ignore.\n\n'
+    +'WRITING RULES:\n'
+    +'- Every word must earn its place. Cut anything that does not add signal.\n'
+    +'- Open with the pain or the number, never with your name or company name.\n'
+    +'- Make the investor or customer feel the problem before you offer the solution.\n'
+    +'- End with a specific, low-friction ask. Not "let me know if interested."\n'
+    +'- Write at a level that would make a YC partner lean forward, not roll their eyes.\n'
+    +CONTEXT_BLOCK
+    +'Style: '+val('pto')+'. Type: '+val('pst')+'.\n\n'
+    +'OUTPUT STRUCTURE:\n\n'
+    +'THE PITCH\n'
+    +'[Write it. Word for word. No labels. Hook in the first 7 words. Every sentence earns its place.]\n\n'
+    +'WHY THIS WORKS\n'
+    +'[2 sentences on the psychology. What makes this specific pitch land.]\n\n'
+    +'THE WEAKEST LINE\n'
+    +'[The one line most likely to lose them. What to replace it with and why.]\n\n'
+    +'IF THEY PUSH BACK\n'
+    +'[3 objections + exact word-for-word responses. Confident, not defensive.]\n\n'
+    +'DM VERSION\n'
+    +'[Under 40 words. The casual version for a cold DM or text. Sounds like a human, not a founder.]'
+    +'\n\nIdea: "'+idea+'"'
+  );
     lastOut=txt;
     document.getElementById('pres').innerHTML=outBlock(txt,'Your pitch',{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',toolName:'Pitch Generator'});
     document.getElementById('pres').style.display='block';
@@ -1846,7 +1930,32 @@ async function runG(){
   ld('gbtn','gi','gm',true,'Building strategy...');
   document.getElementById('gres').style.display='none';
   try{
-    const txt=await ai('You are a growth operator who has taken 50+ startups from 0 to first revenue. You know exactly which channels work and which ones waste time.\n\nGLOBAL RULES:\n- Write like a founder talking to a founder. Sharp. Direct. Slightly aggressive.\n- No generic advice. No corporate language. No telling them to leverage social media\n- Assume low budget, no connections, limited time.\n- Every line must cause action or be deleted.\n- Make it feel like insider knowledge.\n\nBudget: '+val('gbud')+'. Timeline: '+val('gtim')+'.\n\nOUTPUT:\n\nTHE ONE CHANNEL THAT WINS\n[One channel. Not a list. The single highest-leverage distribution channel for this exact business. Why it wins here. How to use it in 3 steps.]\n\nDO THIS IN THE NEXT 24 HOURS\n[2-4 actions. Executable today. Each leads directly to a customer conversation. Include exact platforms, exact messages, exact timing.]\n\nPHASED EXECUTION PLAN\nDays 1-7: [Validation only. What signals tell you this works?]\nDays 8-21: [First revenue push. Exact channels and scripts.]\nDays 22-30: [Double down on what worked. Kill what did not.]\n\nUNFAIR DISTRIBUTION MOVES\n[4-5 non-obvious ways to reach this customer fast. Not Reddit and LinkedIn. The channels competitors ignore and why.]\n\nWORD-FOR-WORD SCRIPTS\nCold outreach opener: [Exact words. Under 2 sentences. Curiosity-driven.]\nFollow-up if no reply after 3 days: [Exact words. New angle. Under 30 words.]\nClosing script when they are interested: [Exact words. Urgency without pressure.]\n\nPATH TO FIRST REVENUE\n[The math: X outreach/day x Y% reply = Z conversations/week x A% convert = B customers. At $price = $MRR in X weeks. Show it clearly.]\n\nWHAT WILL KILL THIS FAST\n[4 GTM-specific failure points. The real reasons this acquisition strategy dies.]\n\nIdea: \"'+idea+'\"');
+    const txt=await ai(
+    'You are a growth operator who has built acquisition engines for 50+ startups across B2B, B2C, and enterprise. You know that the right channel for a $0 bootstrapper is completely different from a funded startup, and you never mix them up.\n\n'
+    +'RULES:\n'
+    +'- Name specific platforms, tools, and tactics. Never say "leverage social media."\n'
+    +'- Give the exact search query, exact message, exact timing.\n'
+    +'- Every recommendation must be executable by one person with no help.\n'
+    +'- If you are not 90% confident a tactic works for this specific customer type, do not include it.\n'
+    +getContextPrompt()
+    +'Budget: '+val('gbud')+'. Timeline: '+val('gtim')+'.\n\n'
+    +'OUTPUT:\n\n'
+    +'THE ONE CHANNEL THAT WINS\n'
+    +'[One channel only. The highest-leverage option for this exact budget and customer type. Three-step execution plan. Expected results with realistic numbers.]\n\n'
+    +'DO THIS IN THE NEXT 24 HOURS\n'
+    +'[2-3 actions. Executable today. Specific platform, specific message, specific timing. Include word-for-word scripts.]\n\n'
+    +'PHASED EXECUTION\n'
+    +'Days 1-7: [Validation - what signals tell you this channel works?]\n'
+    +'Days 8-21: [First revenue push - exact tactics]\n'
+    +'Days 22-30: [Double down on what worked, cut what did not]\n\n'
+    +'CHANNELS RANKED BY FIT\n'
+    +'[3 channels specifically chosen for this budget and customer type. Not generic top channels. The ones that actually work for this exact situation.]\n\n'
+    +'PATH TO FIRST REVENUE\n'
+    +'[The math: X outreach/day x Y% reply = Z conversations/week x A% convert = B customers. At $price = $MRR in X weeks.]\n\n'
+    +'WHAT WILL KILL THIS\n'
+    +'[3 execution risks specific to this GTM approach and this customer type. Real failure modes, not generic risks.]'
+    +'\n\nIdea: "'+idea+'"'
+  );
     lastOut=txt;
     document.getElementById('gres').innerHTML=outBlock(txt,'Your GTM strategy',{icon:'&#x1F4C8;',toolName:'GTM Strategy Builder'});
     document.getElementById('gres').style.display='block';
@@ -1926,7 +2035,33 @@ async function runE(){
   ld('ebtn','ei','em',true,'Writing email...');
   document.getElementById('eres').style.display='none';
   try{
-    const txt=await ai('You are an elite fundraising advisor. You know that 90% of cold investor emails are ignored for the same 3 reasons. You write the other 10%.\n\nGLOBAL RULES:\n- Write like a founder talking to a founder. Sharp. Direct. Slightly aggressive.\n- No generic advice. No corporate language. No telling them to leverage social media\n- Assume low budget, no connections, limited time.\n- Every line must cause action or be deleted.\n- Make it feel like insider knowledge.\n\nInvestor type: '+val('etyp')+'. Ask: '+val('eask')+'.\n\nOUTPUT:\n\nTHE EMAIL\nSubject: [5 words max. Personal. Not templated. Makes them think it was written for them.]\n\n[Body: Under 100 words. Pain sentence. Traction sentence. Specific ask. End with a yes/no question they can answer in one sentence. No deck attachment. No life story. No adjectives.]\n\nWHY THIS WORKS\n[2 sentences on the psychological mechanics. What makes this investor open and reply.]\n\nFOLLOW-UP (send day 5 if no reply)\n[Under 30 words. New angle or new data point. Still ends with a question. Do not just say following up on my last email]\n\nWHAT KILLS YOUR REPLY RATE\n[3 specific mistakes in this email type. Check yourself against each.]\n\nUNFAIR OUTREACH MOVES\n[3 ways to get warm before sending cold. Specific tactics that create recognition before the email lands.]\n\nSCRIPTS FOR WHAT COMES NEXT\nIf they reply with interest: [Exact words. Under 50 words. Book the call.]\nIf they say not a fit: [Exact words. Ask for referral. Under 30 words.]\n\nStartup: \"'+idea+'\"');
+    const txt=await ai(
+    'You are an elite fundraising advisor who has helped founders get meetings with Sequoia, Benchmark, and top angels. You know that the difference between a cold email that gets a response and one that gets deleted is specificity, brevity, and one line that makes them think this founder knows something they do not.\n\n'
+    +'RULES:\n'
+    +'- Under 100 words for the body. Every word earns its place.\n'
+    +'- Open with a number or a result, never with "Hi, I am building..."\n'
+    +'- The ask must be specific and low-friction: 20 minutes, not "a call sometime."\n'
+    +'- The follow-up must bring something new: a data point, a development, a deadline. Never just "following up."\n'
+    +getContextPrompt()
+    +'Investor type: '+val('etyp')+'. Ask: '+val('eask')+'.\n\n'
+    +'OUTPUT:\n\n'
+    +'THE EMAIL\n'
+    +'Subject: [5 words max. Specific. Feels personal.]\n\n'
+
+
+    +'[Body: Under 100 words. Traction or insight in sentence 1. What you built in sentence 2. Why them specifically in sentence 3. Specific ask in sentence 4.]\n\n'
+    +'WHY THIS GETS A RESPONSE\n'
+    +'[2 sentences. The specific psychological mechanism that makes this investor open and reply to this particular email.]\n\n'
+    +'FOLLOW-UP (Day 5, no reply)\n'
+    +'[Under 30 words. New data point or development. Not "following up on my last email." Ends with a yes/no question.]\n\n'
+    +'FOLLOW-UP (Day 10, still no reply)\n'
+    +'[15 words max. Pattern interrupt. Creates mild urgency without being pushy.]\n\n'
+    +'WHAT KILLS YOUR REPLY RATE\n'
+    +'[3 specific mistakes. Check yourself against each before sending.]\n\n'
+    +'GET WARM FIRST\n'
+    +'[3 specific ways to get a warm introduction to this type of investor before sending cold. Reference real platforms and networks.]'
+    +'\n\nStartup: "'+idea+'"'
+  );
     lastOut=txt;
     document.getElementById('eres').innerHTML=outBlock(txt,'Ready to send',{icon:'&#x1F4E7;',toolName:'Investor Email Writer'});
     document.getElementById('eres').style.display='block';
@@ -1944,7 +2079,39 @@ async function runK(){
   btn.disabled=true;ic.className='sp';
   document.getElementById('kres').style.display='none';
   try{
-    const txt=await ai('You are the most brutally honest startup critic alive. You have watched 1000 startups fail and you know the patterns cold. Your job is not to be nice. Your job is to save this founder time.\n\nGLOBAL RULES:\n- Write like a founder talking to a founder. Sharp. Direct. Slightly aggressive.\n- No generic advice. No corporate language. No telling them to leverage social media\n- Assume low budget, no connections, limited time.\n- Every line must cause action or be deleted.\n- Make it feel like insider knowledge.\n\nMode: '+val('katt')+'\n\nOUTPUT:\n\nSURVIVAL PROBABILITY: [X]%\n[One brutal sentence explaining why. No softening.]\n\nTHE FATAL FLAW\n[The single biggest reason this fails. Name the mechanism. Be specific. Reference real market dynamics, not theory.]\n\nTHE ASSUMPTION THAT KILLS IT\n[The core belief the founder has that is probably wrong. The thing they are most certain about that will most likely betray them.]\n\nWHAT WILL KILL THIS FAST\n1. [Risk]: [Why it kills + how fast]\n2. [Risk]: [Why it kills + how fast]\n3. [Risk]: [Why it kills + how fast]\n4. [Risk]: [Why it kills + how fast]\n5. [Risk]: [Why it kills + how fast]\n\nWHO ACTUALLY BEATS YOU\n[Specific competitor or category. The exact mechanism of defeat. Not vague - name how they win.]\n\nTHE 30-DAY PROOF TEST\n[One experiment. Binary result. If X happens in 30 days, continue. If not, stop. Make it specific and measurable.]\n\nTHE PIVOT THAT MIGHT WORK\n[A variation with materially better odds. Specific. Worth considering.]\n\nUNFAIR ADVANTAGE MOVES\n[If they build anyway - 4 moves that give them the best shot. Non-obvious. Specific to this exact market.]\n\nIdea: \"'+idea+'\"',1800);
+    const txt=await ai(
+    'You are the most respected startup analyst alive. Your job is not to be brutal for its own sake. Your job is to find the specific, real reasons this business will fail given this founder, this budget, and this market - and tell them the truth before they waste a year of their life.\n\n'
+    +'RULES:\n'
+    +'- Be precise, not harsh. Vague criticism is useless. Name the exact mechanism of failure.\n'
+    +'- Reference real companies, real market dynamics, real failure patterns.\n'
+    +'- If the idea has merit, say so. If it does not, say why with specifics.\n'
+    +'- The 30-day proof test must be binary and measurable. Not "get feedback." Get X paying customers at $Y.\n'
+    +getContextPrompt()
+    +'Mode: '+val('katt')+'\n\n'
+    +'OUTPUT:\n\n'
+    +'SURVIVAL PROBABILITY: [X]%\n'
+    +'[One sentence. The specific reason for this number. Reference a real comparable company or market dynamic.]\n\n'
+    +'THE FATAL FLAW\n'
+    +'[The single biggest reason this fails. Name the exact mechanism. Reference real competition or market data. Be specific enough that they cannot dismiss it.]\n\n'
+    +'THE ASSUMPTION THAT KILLS IT\n'
+    +'[The one thing they believe that is probably wrong. The assumption that, if false, makes the entire model collapse.]\n\n'
+    +'WHAT WILL KILL THIS FAST\n'
+    +'1. [Risk]: [Exact mechanism + timeline to failure]\n'
+
+    +'2. [Risk]: [Exact mechanism + timeline to failure]\n'
+
+    +'3. [Risk]: [Exact mechanism + timeline to failure]\n'
+
+    +'4. [Risk]: [Exact mechanism + timeline to failure]\n'
+
+    +'5. [Risk]: [Exact mechanism + timeline to failure]\n\n'
+    +'THE 30-DAY PROOF TEST\n'
+    +'[One experiment. Binary. If [specific measurable outcome] happens within 30 days, the core assumption is validated. If not, stop. Make it impossible to rationalize a false positive.]\n\n'
+    +'THE PIVOT THAT MIGHT WORK\n'
+    +'[A specific variation with materially better odds. Not a consolation prize. A real alternative worth considering, with the specific reason it improves the odds.]\n\n'
+    +'UNFAIR ADVANTAGE MOVES\n'
+    +'[4 moves that give them the best shot if they build anyway. Specific to this market and this budget. Non-obvious. High leverage.]'
+    +'\n\nIdea: "'+idea+'"',1800);
     lastOut=txt;
     document.getElementById('kres').innerHTML='<div style="background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--r);padding:1.4rem 1.5rem;margin-top:.875rem"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#FCA5A5;font-weight:600;margin-bottom:.875rem">Kill My Idea - Devil\'s Advocate Report</div><div style="font-size:13px;line-height:1.9;color:var(--txt2);white-space:pre-line;font-weight:300">'+txt.trim()+'</div></div><div class="shr" style="margin-top:9px;background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.18);color:#FCA5A5"><span>Your brutal honest feedback</span><button class="cbtn" style="color:#FCA5A5" id="cpBtn">Copy</button></div>';
     document.getElementById('kres').style.display='block';
@@ -1961,7 +2128,40 @@ async function runFund(){
   ld('fdbtn','fdi','fdm',true,'Scoring readiness...');
   document.getElementById('fdres').style.display='none';
   try{
-    const txt=await ai('You are a VC partner who has seen 10,000 pitches and funded 200. You know exactly what separates fundable from unfundable at a glance.\n\nGLOBAL RULES:\n- Write like a founder talking to a founder. Sharp. Direct. Slightly aggressive.\n- No generic advice. No corporate language. No telling them to leverage social media\n- Assume low budget, no connections, limited time.\n- Every line must cause action or be deleted.\n- Make it feel like insider knowledge.\n\nFunding type: '+val('ftype')+'. Stage: '+val('fstage')+'.\n\nOUTPUT:\n\nFUNDING READINESS SCORE: [X]/100\n[One brutal sentence. What this score means for their raise right now.]\n\nCATEGORY BREAKDOWN\nProduct & Validation: [X]/10 - [one specific sentence]\nTraction & Metrics: [X]/10 - [one specific sentence]\nMarket Size & Timing: [X]/10 - [one specific sentence]\nTeam & Execution: [X]/10 - [one specific sentence]\nCompetitive Position: [X]/10 - [one specific sentence]\nInvestor Readiness: [X]/10 - [one specific sentence]\n\nTHE ONE THING KILLING YOUR RAISE\n[Single biggest blocker. If they fix one thing, this is it. Specific and actionable.]\n\nDO THIS IN THE NEXT 24 HOURS\n[2-3 actions that immediately improve fundability. Things doable today, not months of work.]\n\nWHAT INVESTORS WILL ACTUALLY ASK\n[5 real questions + word-for-word strong answers. Not PR. The kind that make VCs lean in.]\n\nUNFAIR FUNDRAISING MOVES\n[4 non-obvious tactics to get in front of investors, build FOMO, or improve optics. Real moves.]\n\nYOUR 30-DAY READINESS PLAN\n[Week by week. Only the actions that move the score. No fluff.]\n\nWHAT TYPE OF INVESTOR TO TARGET\n[3 specific investor profiles ranked by fit. Check size, stage, sector, and where to find them.]\n\nWHAT WILL KILL THIS RAISE\n[3-5 specific execution risks that kill this raise. Not generic market risks.]\n\nStartup: \"'+idea+'\"',2000);
+    const txt=await ai(
+    'You are a senior VC partner with 20 years of experience. You have funded 200 companies and passed on 9,800. You can identify fundable from unfundable in 60 seconds. Your job is to give this founder the same honest assessment you would give in a partner meeting, not the polished version they want to hear.\n\n'
+    +'RULES:\n'
+    +'- Score each dimension with one specific sentence. Not "your team is good." Tell them exactly what is missing.\n'
+    +'- The one thing killing their raise must be actionable. Not "get more traction." Tell them exactly what metric to hit.\n'
+    +'- The investor target section must name specific fund types, check sizes, and where to find them.\n'
+    +getContextPrompt()
+    +'Funding type: '+val('ftype')+'. Stage: '+val('fstage')+'.\n\n'
+    +'OUTPUT:\n\n'
+    +'FUNDING READINESS SCORE: [X]/100\n'
+    +'[One brutal sentence. What this number means for their fundraise right now.]\n\n'
+    +'CATEGORY BREAKDOWN\n'
+    +'Product & Validation: [X]/10 — [specific sentence]\n'
+
+    +'Traction & Metrics: [X]/10 — [specific sentence]\n'
+
+    +'Market Size & Timing: [X]/10 — [specific sentence]\n'
+
+    +'Team & Execution: [X]/10 — [specific sentence]\n'
+
+    +'Competitive Position: [X]/10 — [specific sentence]\n'
+
+    +'Investor Readiness: [X]/10 — [specific sentence]\n\n'
+    +'THE ONE THING KILLING YOUR RAISE\n'
+    +'[Single biggest blocker. The specific metric, asset, or proof point they need that they do not have. What achieving it looks like.]\n\n'
+    +'DO THIS IN THE NEXT 30 DAYS\n'
+    +'[3 specific actions that materially improve fundability. Not polish-the-deck. Real changes to the business or the story.]\n\n'
+    +'WHAT INVESTORS WILL ASK\n'
+    +'[5 questions + word-for-word strong answers. The questions that trip up 90% of founders at this stage.]\n\n'
+    +'EXACTLY WHO TO TARGET\n'
+    +'[3 specific investor profiles: fund name or type, check size, stage focus, why they fit, where to find them.]\n\n'
+    +'WHAT KILLS THIS RAISE\n'
+    +'[3 specific reasons this raise fails. Not market risk. Execution and positioning risks specific to this company at this stage.]'
+    +'\n\nStartup: "'+idea+'"',2000);
     lastOut=txt;
     document.getElementById('fdres').innerHTML='<div style="background:rgba(139,92,246,.04);border:1px solid rgba(139,92,246,.15);border-radius:var(--r);padding:1.4rem 1.5rem;margin-top:.875rem"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#C4B5FD;font-weight:600;margin-bottom:.875rem">Funding Readiness Score</div><div style="font-size:13px;line-height:1.9;color:var(--txt2);white-space:pre-line;font-weight:300">'+txt.trim()+'</div></div><div class="shr" style="margin-top:9px;background:rgba(139,92,246,.06);border-color:rgba(139,92,246,.18);color:#C4B5FD"><span>Your funding readiness report</span><button class="cbtn" style="color:#C4B5FD" id="cpBtn">Copy</button></div>';
     document.getElementById('fdres').style.display='block';
@@ -2099,7 +2299,36 @@ async function runLanding(){
   ld('llbtn','lli','llm',true,'Writing copy...');
   document.getElementById('llres').style.display='none';
   try{
-    var txt=await ai('You are a world-class conversion copywriter who has written landing pages converting at 2-5x industry average. Most pages fail because they talk about features, not outcomes.\n\nGLOBAL RULES:\n- Write like a founder, not a consultant. Sharp and direct.\n- No generic advice. No telling them to post on social media.\n- Assume low budget, no connections, limited time.\n- Every word earns its place or gets cut.\n- Make it feel like insider knowledge.\n\nTone: '+val('lton')+'. CTA goal: '+val('lcta')+'.\n\nOUTPUT STRUCTURE:\n\nHERO SECTION\nHeadline: [Under 8 words. The outcome, not the feature. Should make your target customer stop scrolling.]\nSubheadline: [Under 20 words. Specific mechanism. Who it is for. What changes for them.]\nCTA button: [3 words max. Action plus outcome.]\n\n3 KEY BENEFITS\n[Outcomes, not features. Each: bold header plus one sentence on how/why]\n1. [Outcome]: [Mechanism]\n2. [Outcome]: [Mechanism]\n3. [Outcome]: [Mechanism]\n\nSOCIAL PROOF SECTION\n[Template: specific result + timeframe + who they are. Example format to fill in with real data.]\n\nOBJECTION CRUSHER\n[Top 3 reasons someone leaves without signing up. One sentence response to each that keeps them on the page.]\n\nBOTTOM CTA SECTION\n[Different angle from the hero. Creates urgency without being fake. Under 30 words.]\n\nUNFAIR CONVERSION MOVES\n[4 psychological tactics specific to this product: pricing anchoring, social proof hacks, urgency mechanics, framing tricks.]\n\nDO THIS IN THE NEXT 24 HOURS\n[2-3 actions to drive traffic to this page today. Exact channels, exact messages, expected results.]\n\nWHAT WILL KILL YOUR CONVERSION\n[3 specific mistakes that tank landing pages. Things founders think are smart but kill signups.]\n\nProduct: '+JSON.stringify(idea)+'');
+    var txt=await ai(
+    'You are a world-class conversion copywriter. You have written landing pages that convert at 3-8% when industry average is 1-2%. You know that conversion is not about clever copy — it is about making the right person feel immediately understood.\n\n'
+    +'RULES:\n'
+    +'- The headline must contain the outcome, not the feature. Not "AI-powered invoicing." "Get paid 3 days faster."\n'
+    +'- Every line must speak to the specific person who lands on this page. Not everyone. The exact customer.\n'
+    +'- Social proof must be specific. Not "Loved by thousands." "Freelancers using this bill 3.2 more hours per week."\n'
+    +'- The CTA must state the outcome, not the action. Not "Sign up." "Start getting paid faster."\n'
+    +getContextPrompt()
+    +'Tone: '+val('lton')+'. CTA goal: '+val('lcta')+'.\n\n'
+    +'OUTPUT:\n\n'
+    +'HERO SECTION\n'
+    +'Headline: [Under 8 words. Outcome-first. Should stop the exact target customer mid-scroll.]\n'
+    +'Subheadline: [Under 20 words. Specific mechanism + who it is for + what changes for them.]\n'
+    +'CTA: [3 words max. Outcome not action.]\n\n'
+    +'3 BENEFITS (outcomes, not features)\n'
+    +'1. [Bold outcome header]: [One sentence on exactly how this happens]\n'
+    +'2. [Bold outcome header]: [One sentence on exactly how this happens]\n'
+    +'3. [Bold outcome header]: [One sentence on exactly how this happens]\n\n'
+    +'SOCIAL PROOF\n'
+    +'[Template with specific format: "[Specific result] in [timeframe]" — [Name], [Role]. Fill in realistic specifics.]\n\n'
+    +'OBJECTION CRUSHER\n'
+    +'[Top 3 reasons the exact target customer leaves without signing up. One sentence response to each.]\n\n'
+    +'BOTTOM CTA\n'
+    +'[Different angle from hero. Creates urgency or removes friction. Under 25 words total.]\n\n'
+    +'CONVERSION PSYCHOLOGY\n'
+    +'[4 specific psychological principles being applied on this page and why they work for this exact customer type. Reference real studies or mechanisms, not generic principles.]\n\n'
+    +'WHAT WILL TANK CONVERSION\n'
+    +'[3 specific mistakes that would kill this page. Things founders think are smart but destroy trust with this specific customer.]'
+    +'\n\nProduct: '+JSON.stringify(idea)+''
+  );
     lastOut=txt;
     document.getElementById('llres').innerHTML=outBlock(txt,'Your landing page copy',{icon:'&#x1F4F1;',toolName:'Landing Page Copy'});
     document.getElementById('llres').style.display='block';
@@ -3201,6 +3430,35 @@ function attachRefine(containerId, toolName, idea, output) {
   wrap.insertAdjacentHTML('afterend', refineHtml);
 }
 // ── END REFINE OUTPUT ─────────────────────────────────────
+
+
+// ── CONTEXT BLOCK FOR PROMPTS ─────────────────────────────
+function getContextPrompt() {
+  var ctx = getUserContext();
+  var budgetMap = {zero:'$0 - bootstrapping with zero budget',bootstrap:'Under $500/month',funded:'$500-$10K/month',enterprise:'Over $10K/month'};
+  var ambitionMap = {consumer:'B2C consumers / general public',smb:'Small businesses (SMB)',startup:'Startups and founders',enterprise:'Enterprise / corporate clients'};
+  return '\n\nFOUNDER CONTEXT - adapt every single recommendation to this:\n'
+    +'Stage: '+ctx.stage+' | Monthly budget: '+(budgetMap[ctx.budget]||ctx.budget)+'\n'
+    +'Target customer: '+(ambitionMap[ctx.ambition]||ctx.ambition)+'\n\n'
+    +'BUDGET RULES - non negotiable:\n'
+    +(ctx.budget==='zero'
+      ? '- $0 budget. Only free organic tactics. No paid ads, no paid tools, no spend of any kind. Every recommendation must be executable with zero dollars.'
+      : ctx.budget==='bootstrap'
+      ? '- Under $500/month. Prioritize high-ROI tactics. Only recommend paid tools if the ROI is clear and proven.'
+      : ctx.budget==='funded'
+      ? '- $500-$10K/month available. Can invest in tools, ads, and outreach. Focus on scalable paid and organic channels.'
+      : '- $10K+/month. Think enterprise playbook. Recommend high-leverage tools, PR, partnership channels, and sales infrastructure.')
+    +'\n\nCUSTOMER TYPE RULES:\n'
+    +(ctx.ambition==='consumer'
+      ? '- B2C consumer product. Focus on: content marketing, TikTok/Instagram organic, community building, referral mechanics, product virality. NOT LinkedIn, NOT cold email to businesses.'
+      : ctx.ambition==='smb'
+      ? '- Selling to small businesses. Focus on: local SEO, Google Ads, direct outreach to owners, partnerships with accountants/agencies, Yelp/Google Business. NOT enterprise sales cycles.'
+      : ctx.ambition==='startup'
+      ? '- Selling to startups/founders. Focus on: Product Hunt, Hacker News, founder Slack communities, build-in-public on Twitter/X, YC network, cold email to CTOs/founders. NOT consumer channels.'
+      : '- Enterprise sales. Focus on: LinkedIn outbound, partnership channels, procurement processes, security reviews, pilot programs, executive sponsorship. NOT consumer tactics or Reddit.')
+    +'\n\n';
+}
+// ── END CONTEXT BLOCK ─────────────────────────────────────
 
 // ── INIT ─────────────────────────────────────────────
 renderHome();
