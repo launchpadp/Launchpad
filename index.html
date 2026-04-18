@@ -215,7 +215,7 @@ h1 em{font-style:italic;background:linear-gradient(135deg,var(--acc),var(--elite
 .ph h2{font-family:'Instrument Serif',serif;font-size:clamp(2.2rem,5vw,3.5rem);color:#fff;line-height:1.08;letter-spacing:-.025em;margin-bottom:.75rem}
 .ph p{font-size:1rem;color:var(--txt2);font-weight:300;line-height:1.7}
 .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:920px;margin:0 auto}
-.plan{border-radius:var(--rxl);padding:2rem 1.75rem;border:1px solid var(--bdr);position:relative;overflow:hidden}
+.plan{border-radius:var(--rxl);padding:2rem 1.75rem;border:1px solid var(--bdr);position:relative;overflow:visible}
 .plan.fp{background:var(--sur)}
 .plan.pp{background:linear-gradient(135deg,rgba(37,99,235,.14),rgba(29,78,216,.07));border-color:rgba(37,99,235,.3);box-shadow:0 0 50px rgba(37,99,235,.08)}
 .plan.ep{background:linear-gradient(135deg,rgba(139,92,246,.14),rgba(109,40,217,.07));border-color:rgba(139,92,246,.3);box-shadow:0 0 50px rgba(139,92,246,.08)}
@@ -1107,7 +1107,7 @@ function mget(k){try{const s=JSON.parse(localStorage.getItem('lp_mem')||'{}');re
 (function(){try{const s=JSON.parse(localStorage.getItem('lp_mem')||'{}');Object.assign(MEM,s);}catch(e){}})();
 
 // ── TOOLS DEFINITION ────────────────────────────────
-const STRIPE={pro:'https://buy.stripe.com/test_9B6cN42AkeyF7XD3B257W00',elite:'https://buy.stripe.com/test_3cI14m5Mw0HP7XD4F657W01'};
+const STRIPE={pro:'https://buy.stripe.com/dRm6oJ3Bu8NSeyO2806J200',elite:'https://buy.stripe.com/4gMcN7b3W8NS1M25kc6J201'};
 const TOOLS=[
   {id:'validate', name:'Idea Validator',         sub:'Score your idea 1-100 with the Launchpad Viability Matrix',bg:'rgba(37,99,235,.12)',sk:'#60A5FA',tier:'free', tag:'Free', tc:'ftag'},
   {id:'pitch',    name:'Pitch Generator',         sub:'Investor or customer pitch engineered to get responses',   bg:'rgba(37,99,235,.12)',sk:'#60A5FA',tier:'pro',  tag:'Pro',  tc:'ptag'},
