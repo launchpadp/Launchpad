@@ -1797,6 +1797,7 @@ async function runP(){
     lastOut=txt;
     document.getElementById('pres').innerHTML=outBlock(txt,'Your pitch',{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',toolName:'Pitch Generator'});
     document.getElementById('pres').style.display='block';
+    attachRefine('pres','Pitch Generator',idea,txt);
     const b=document.getElementById('cpBtn');if(b)b.onclick=()=>cpLastOut(b);
   }catch(e){const m=document.getElementById('pm');if(m)m.textContent='Something went wrong.';}
   ld('pbtn','pi','pm',false,'','');
@@ -1928,6 +1929,7 @@ async function runFund(){
     lastOut=txt;
     document.getElementById('fdres').innerHTML='<div style="background:rgba(139,92,246,.04);border:1px solid rgba(139,92,246,.15);border-radius:var(--r);padding:1.4rem 1.5rem;margin-top:.875rem"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#C4B5FD;font-weight:600;margin-bottom:.875rem">Funding Readiness Score</div><div style="font-size:13px;line-height:1.9;color:var(--txt2);white-space:pre-line;font-weight:300">'+txt.trim()+'</div></div><div class="shr" style="margin-top:9px;background:rgba(139,92,246,.06);border-color:rgba(139,92,246,.18);color:#C4B5FD"><span>Your funding readiness report</span><button class="cbtn" style="color:#C4B5FD" id="cpBtn">Copy</button></div>';
     document.getElementById('fdres').style.display='block';
+    attachRefine('fdres','Funding Readiness Score',idea,txt);
     const b=document.getElementById('cpBtn');if(b)b.onclick=()=>cpLastOut(b);
   }catch(e){const m=document.getElementById('fdm');if(m)m.textContent='Something went wrong.';}
   ld('fdbtn','fdi','fdm',false,'','');
@@ -2065,6 +2067,7 @@ async function runLanding(){
     lastOut=txt;
     document.getElementById('llres').innerHTML=outBlock(txt,'Your landing page copy',{icon:'&#x1F4F1;',toolName:'Landing Page Copy'});
     document.getElementById('llres').style.display='block';
+    attachRefine('llres','Landing Page Copy',idea,txt);
     var b=document.getElementById('cpBtn');if(b)b.onclick=function(){cpLastOut(b);};
   }catch(e){var m=document.getElementById('llm');if(m)m.textContent='Something went wrong.';}
   ld('llbtn','lli','llm',false,'','');
