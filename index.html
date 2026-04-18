@@ -1348,7 +1348,7 @@ function ld(b,i,s,on,msg){
 }
 async function ai(prompt,tok){
   tok=tok||1500;
-  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:tok,messages:[{role:'user',content:prompt}]})});
+  const r=await fetch('https://launchpad-api.dpatel0729.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:tok,messages:[{role:'user',content:prompt}]})});
   const d=await r.json();
   return d.content.map(x=>x.text||'').join('');
 }
