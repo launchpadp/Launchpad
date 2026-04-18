@@ -599,6 +599,49 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
   .sticky-cta.show{transform:translateY(0)}
   .sticky-cta-inner{border-radius:16px}
 }
+
+/* ── SHARE CARD ──────────────────────────────────────── */
+.share-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px)}
+.share-modal.open{display:flex}
+.share-box{background:var(--ink2);border:1px solid var(--bdr2);border-radius:var(--rxl);padding:2rem;max-width:480px;width:100%;margin:1rem}
+.share-box h3{font-family:'Instrument Serif',serif;font-size:1.5rem;color:#fff;margin-bottom:.4rem}
+.share-box p{font-size:13px;color:var(--txt2);margin-bottom:1.5rem;font-weight:300}
+.share-card-preview{border-radius:var(--rl);overflow:hidden;margin-bottom:1.25rem;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.share-btns{display:flex;gap:8px;flex-wrap:wrap}
+.share-btn{flex:1;padding:10px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;border:none;transition:all .2s;min-width:120px;text-align:center}
+.share-btn.primary{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 0 16px var(--bglow)}
+.share-btn.ghost{background:var(--sur);color:var(--txt);border:1px solid var(--bdr2)}
+.share-btn.tw{background:#000;color:#fff;border:1px solid #333}
+.share-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;color:var(--txt3);font-size:20px;cursor:pointer;padding:4px 8px;transition:color .2s}
+.share-close:hover{color:#fff}
+
+/* ── PERSONALIZED DASHBOARD ─────────────────────────── */
+.dash-greeting{margin-bottom:2rem}
+.dash-stage-bar{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.dash-stage-info{display:flex;align-items:center;gap:12px}
+.dash-stage-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.dash-stage-name{font-size:14px;font-weight:500;color:#fff;margin-bottom:2px}
+.dash-stage-sub{font-size:12px;color:var(--txt2);font-weight:300}
+.dash-next-move{background:linear-gradient(135deg,rgba(37,99,235,.12),rgba(139,92,246,.06));border:1px solid rgba(37,99,235,.2);border-radius:var(--rl);padding:1.25rem 1.5rem;margin-bottom:1.5rem}
+.dash-next-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);margin-bottom:.5rem}
+.dash-next-action{font-size:14px;color:#fff;font-weight:400;margin-bottom:.5rem}
+.dash-next-sub{font-size:12px;color:var(--txt2);font-weight:300}
+.dash-next-btn{margin-top:.875rem;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;padding:8px 20px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 0 14px var(--bglow);transition:all .2s}
+.dash-next-btn:hover{box-shadow:0 0 24px var(--bglow)}
+.dash-priority-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1.5rem}
+.dash-priority-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.1rem 1.25rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.dash-priority-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue2));opacity:0;transition:opacity .2s}
+.dash-priority-card:hover{border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.06)}
+.dash-priority-card:hover::before{opacity:1}
+.dpc-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3);margin-bottom:.4rem}
+.dpc-title{font-size:13px;font-weight:500;color:#fff;margin-bottom:.25rem}
+.dpc-sub{font-size:11px;color:var(--txt2);font-weight:300}
+.dash-progress{margin-bottom:1.5rem}
+.dp-label{display:flex;justify-content:space-between;margin-bottom:.5rem}
+.dp-title{font-size:12px;color:var(--txt2);font-weight:400}
+.dp-pct{font-size:12px;color:var(--acc);font-weight:500}
+.dp-bar{height:4px;background:var(--bdr);border-radius:99px;overflow:hidden}
+.dp-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--blue2));transition:width 1s ease}
 .mobnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(7,9,15,.96);backdrop-filter:blur(20px);border-top:1px solid var(--bdr);padding:.5rem 0}
 .mn-inner{display:flex;justify-content:space-around}
 .mni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;cursor:pointer;color:var(--txt3);transition:color .2s;font-size:10px;font-weight:500}
@@ -1138,6 +1181,76 @@ function renderHome(){
 }
 
 // ── DASHBOARD ────────────────────────────────────────
+function getStageConfig(stage) {
+  var stages = {
+    idea: {
+      name: 'Idea Stage',
+      sub: 'Validating your concept',
+      color: '#60A5FA',
+      bg: 'rgba(37,99,235,.15)',
+      nextMove: 'Run the Idea Validator on your concept',
+      nextSub: 'Get a 1-100 viability score and know if this is worth building before you invest more time.',
+      nextTool: 'validate',
+      priority: [
+        {label:'Start here', title:'Idea Validator', sub:'Score your concept honestly', tool:'validate'},
+        {label:'Then this', title:'Kill My Idea', sub:'Find every reason it could fail', tool:'kill'},
+        {label:'Build momentum', title:'Pitch Generator', sub:'Explain what you are building clearly', tool:'pitch'},
+        {label:'Plan ahead', title:'GTM Strategy', sub:'Map your path to first users', tool:'gtm'}
+      ],
+      progress: 15
+    },
+    building: {
+      name: 'Building Stage',
+      sub: 'Developing your product',
+      color: '#FBBF24',
+      bg: 'rgba(245,158,11,.15)',
+      nextMove: 'Find your first 10 customers now',
+      nextSub: 'Start customer conversations today. They will shape your product.',
+      nextTool: 'first10',
+      priority: [
+        {label:'Most urgent', title:'First 10 Customers', sub:'Find paying customers today', tool:'first10'},
+        {label:'Essential', title:'GTM Strategy Builder', sub:'Build your go-to-market plan', tool:'gtm'},
+        {label:'Credibility', title:'Pitch Generator', sub:'Nail how you explain this', tool:'pitch'},
+        {label:'Stay sharp', title:'Kill My Idea', sub:'Check your blind spots', tool:'kill'}
+      ],
+      progress: 40
+    },
+    launching: {
+      name: 'Launch Stage',
+      sub: 'Ready to go to market',
+      color: '#C4B5FD',
+      bg: 'rgba(139,92,246,.15)',
+      nextMove: 'Write your investor outreach email',
+      nextSub: 'A cold email under 100 words beats a full deck for getting replies.',
+      nextTool: 'email',
+      priority: [
+        {label:'Raise capital', title:'Investor Email Writer', sub:'Cold outreach that gets replies', tool:'email'},
+        {label:'Check readiness', title:'Funding Readiness Score', sub:'Are you actually ready to raise?', tool:'funding'},
+        {label:'Full plan', title:'Business Plan Generator', sub:'Document your strategy', tool:'bizplan'},
+        {label:'Optimize', title:'Landing Page Copy', sub:'Convert visitors to signups', tool:'landing'}
+      ],
+      progress: 75
+    },
+    scaling: {
+      name: 'Scaling Stage',
+      sub: 'Growing your business',
+      color: '#4ADE80',
+      bg: 'rgba(34,197,94,.15)',
+      nextMove: 'Generate your business plan',
+      nextSub: 'Document your model, market, and financials. Essential for investors, partners, and team alignment.',
+      nextTool: 'bizplan',
+      priority: [
+        {label:'Foundation', title:'Business Plan Generator', sub:'Full structured plan', tool:'bizplan'},
+        {label:'Fundraising', title:'Funding Readiness Score', sub:'8-dimension gap analysis', tool:'funding'},
+        {label:'Outreach', title:'Investor Email Writer', sub:'Get in front of investors', tool:'email'},
+        {label:'Compare', title:'Idea vs Idea', sub:'Evaluate new opportunities', tool:'compare'}
+      ],
+      progress: 90
+    }
+  };
+  return stages[stage] || stages.idea;
+}
+
 function renderDash(){
   if(!user){go('home');return;}
   var n=user.name.split(' ')[0];
@@ -1148,8 +1261,15 @@ function renderDash(){
   var dg2=document.getElementById('dtgrid');
   if(!dg||!dt||!dsb||!dg2)return;
 
-  dg.textContent='Welcome back, '+n+' &#128075;';
-  ds.textContent='Your AI toolkit is ready to use.';
+  // Get user stage from onboarding
+  var stage = 'idea';
+  try { var ob = JSON.parse(localStorage.getItem('lp_ob')||'{}'); stage = ob.stage || 'idea'; } catch(e){}
+  var sc = getStageConfig(stage);
+  var hour = new Date().getHours();
+  var greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+  dg.textContent = greeting + ', ' + n;
+  ds.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;background:'+sc.bg+';border:1px solid '+sc.color+'33;color:'+sc.color+';font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;letter-spacing:.05em">'+sc.name+'</span>';
 
   var tl={free:'Free Plan',pro:'Pro &mdash; $14.99/mo',elite:'Elite &mdash; $24.99/mo'};
   var tc={free:'rgba(255,255,255,.7)',pro:'#60A5FA',elite:'#C4B5FD'};
@@ -1896,7 +2016,18 @@ function nextOb(step){
     const el=document.getElementById('obReco');if(el)el.textContent=rm[obData.goal]||'Start with the Idea Validator to score your concept.';
   }
 }
-function finOb(){document.getElementById('obMo').classList.remove('open');document.body.style.overflow='';go('dashboard');}
+function finOb(){
+  // Save onboarding answers
+  try {
+    var obData = {
+      stage: document.querySelector('.ob-opt.sel[data-q="stage"]') ?
+        document.querySelector('.ob-opt.sel[data-q="stage"]').getAttribute('data-v') : 'idea',
+      goal: document.querySelector('.ob-opt.sel[data-q="goal"]') ?
+        document.querySelector('.ob-opt.sel[data-q="goal"]').getAttribute('data-v') : 'validate',
+      completed: true
+    };
+    localStorage.setItem('lp_ob', JSON.stringify(obData));
+  } catch(e) {}document.getElementById('obMo').classList.remove('open');document.body.style.overflow='';go('dashboard');}
 
 
 async function runLanding(){
@@ -2123,6 +2254,7 @@ function buildWarRoomResult(idea, r) {
     +'<div class="wr-action-btns">'
     +'<button class="wr-abtn" onclick="openTool(\'pitch\')">Write full pitch &rarr;</button>'
     +'<button class="wr-abtn" onclick="openTool(\'first10\')">Full customer plan &rarr;</button>'
+    +'<button class="wr-abtn" onclick="openShareCard(r)" style="background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none">Share results</button>'
     +'<button class="wr-abtn ghost" onclick="copyWRReport('+JSON.stringify(r).replace(/</g,'&lt;').replace(/>/g,'&gt;')+')">Copy report</button>'
     +'</div></div>';
 
@@ -2655,6 +2787,259 @@ function animateFounderCount() {
 }
 setTimeout(animateFounderCount, 1400);
 
+
+// ── SHARE CARD GENERATOR ─────────────────────────────────
+var shareCardData = null;
+
+function openShareCard(data) {
+  shareCardData = data;
+  var modal = document.getElementById('shareModal');
+  if(modal) modal.classList.add('open');
+  setTimeout(function() { renderShareCard(data); }, 100);
+}
+
+function closeShareModal(e) {
+  if(e && e.target !== document.getElementById('shareModal')) return;
+  var modal = document.getElementById('shareModal');
+  if(modal) modal.classList.remove('open');
+}
+
+function renderShareCard(data) {
+  var canvas = document.getElementById('shareCardCanvas');
+  if(!canvas) return;
+  var W = 900, H = 500;
+  canvas.width = W; canvas.height = H;
+  canvas.style.width = '100%';
+  var ctx = canvas.getContext('2d');
+
+  // Background
+  var bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#07090F');
+  bg.addColorStop(1, '#0E1117');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid pattern
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for(var x = 0; x < W; x += 60) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for(var y = 0; y < H; y += 60) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Glow
+  var glow = ctx.createRadialGradient(200, 250, 0, 200, 250, 350);
+  glow.addColorStop(0, 'rgba(37,99,235,0.12)');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  // Border
+  ctx.strokeStyle = 'rgba(37,99,235,0.3)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(1, 1, W-2, H-2);
+
+  // Top accent line
+  var accent = ctx.createLinearGradient(0, 0, W, 0);
+  accent.addColorStop(0, 'transparent');
+  accent.addColorStop(0.3, '#2563EB');
+  accent.addColorStop(0.7, '#8B5CF6');
+  accent.addColorStop(1, 'transparent');
+  ctx.fillStyle = accent;
+  ctx.fillRect(0, 0, W, 2);
+
+  // Logo
+  ctx.fillStyle = 'rgba(37,99,235,0.15)';
+  roundRect2(ctx, 40, 36, 36, 36, 10);
+  ctx.fill();
+  ctx.fillStyle = '#60A5FA';
+  ctx.font = 'bold 18px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('L', 58, 59);
+  ctx.fillStyle = '#fff';
+  ctx.font = '600 16px DM Sans, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('Launchpad', 84, 59);
+
+  // Badge
+  ctx.fillStyle = 'rgba(37,99,235,0.15)';
+  roundRect2(ctx, W-200, 36, 160, 28, 14);
+  ctx.fill();
+  ctx.fillStyle = '#60A5FA';
+  ctx.font = '500 11px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('WAR ROOM REPORT', W-120, 54);
+
+  // Score
+  var score = data.score || '?';
+  var verdict = data.verdict || 'Promising';
+  var verdictColors = {'Strong Go':'#4ADE80','Promising':'#60A5FA','Needs Work':'#FCD34D','High Risk':'#FCA5A5'};
+  var col = verdictColors[verdict] || '#60A5FA';
+
+  ctx.fillStyle = col;
+  ctx.font = '300 120px Instrument Serif, serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(score, 40, 220);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  ctx.font = '300 16px DM Sans, sans-serif';
+  ctx.fillText('/100 Viability Score', 40, 245);
+
+  // Verdict pill
+  ctx.fillStyle = col + '22';
+  roundRect2(ctx, 40, 265, 160, 32, 16);
+  ctx.fill();
+  ctx.strokeStyle = col + '44';
+  ctx.lineWidth = 1;
+  roundRect2(ctx, 40, 265, 160, 32, 16);
+  ctx.stroke();
+  ctx.fillStyle = col;
+  ctx.font = '600 13px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(verdict.toUpperCase(), 120, 286);
+
+  // Idea text
+  var idea = data.idea || '';
+  if(idea.length > 80) idea = idea.slice(0, 80) + '...';
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '300 13px DM Sans, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('"' + idea + '"', 40, 340);
+
+  // Right side metrics
+  var metrics = [
+    {label:'Market', value: data.market || '—'},
+    {label:'Competition', value: data.comp || '—'},
+    {label:'Verdict', value: verdict}
+  ];
+  var rx = 520;
+  ctx.fillStyle = 'rgba(255,255,255,0.04)';
+  roundRect2(ctx, rx, 90, 340, 320, 16);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  roundRect2(ctx, rx, 90, 340, 320, 16);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '500 10px DM Sans, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('ANALYSIS SUMMARY', rx+20, 118);
+
+  var summary = data.summary || data.verdictReason || '';
+  var words = summary.split(' ');
+  var summaryLines = [];
+  var currentLine = '';
+  words.forEach(function(w) {
+    if((currentLine + ' ' + w).trim().length > 38) {
+      if(currentLine) summaryLines.push(currentLine);
+      currentLine = w;
+    } else {
+      currentLine = (currentLine + ' ' + w).trim();
+    }
+  });
+  if(currentLine) summaryLines.push(currentLine);
+  summaryLines = summaryLines.slice(0,4);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '300 13px DM Sans, sans-serif';
+  summaryLines.forEach(function(line, i) {
+    ctx.fillText(line, rx+20, 145 + i*22);
+  });
+
+  // Mini score bars
+  var bars = [
+    {label:'Viability', pct: score/100},
+    {label:'Market fit', pct: .72},
+    {label:'Execution', pct: .65}
+  ];
+  bars.forEach(function(b, i) {
+    var by = 260 + i*45;
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '400 11px DM Sans, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(b.label, rx+20, by);
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    roundRect2(ctx, rx+20, by+8, 260, 5, 3);
+    ctx.fill();
+    var fillGrad = ctx.createLinearGradient(rx+20, 0, rx+20+260*b.pct, 0);
+    fillGrad.addColorStop(0, '#2563EB');
+    fillGrad.addColorStop(1, '#8B5CF6');
+    ctx.fillStyle = fillGrad;
+    roundRect2(ctx, rx+20, by+8, 260*b.pct, 5, 3);
+    ctx.fill();
+    ctx.fillStyle = col;
+    ctx.font = '600 11px DM Sans, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(b.pct*100)+'%', rx+300, by);
+  });
+
+  // Footer
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.font = '300 12px DM Sans, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('launchpad-one-red.vercel.app', 40, H-30);
+  ctx.textAlign = 'right';
+  ctx.fillText('AI Toolkit for Entrepreneurs', W-40, H-30);
+}
+
+function roundRect2(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+function downloadShareCard() {
+  var canvas = document.getElementById('shareCardCanvas');
+  if(!canvas) return;
+  var link = document.createElement('a');
+  link.download = 'launchpad-war-room.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function shareToTwitter() {
+  var score = shareCardData ? shareCardData.score : '?';
+  var verdict = shareCardData ? shareCardData.verdict : '';
+  var text = 'Just ran my startup idea through the Launchpad War Room. Got a ' + score + '/100 viability score — ' + verdict + '. 5 AI analyses in 60 seconds. Try it free:';
+  var url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent('https://launchpad-one-red.vercel.app');
+  window.open(url, '_blank');
+}
+// ── END SHARE CARD ───────────────────────────────────────
+
+
+// ── FOUNDER ACCESS LINK ───────────────────────────────────
+function checkFounderAccess() {
+  var params = new URLSearchParams(window.location.search);
+  var code = params.get('founder');
+  if(code === '0729') {
+    var u = JSON.parse(localStorage.getItem('lp_usr') || 'null');
+    if(!u) {
+      u = {name:'Founder', email:'founder@launchpad.ai', tier:'elite'};
+    } else {
+      u.tier = 'elite';
+    }
+    user = u;
+    tier = 'elite';
+    localStorage.setItem('lp_usr', JSON.stringify(u));
+    // Show welcome message
+    var msg = document.createElement('div');
+    msg.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(37,99,235,.95),rgba(139,92,246,.95));color:#fff;padding:12px 24px;border-radius:99px;font-size:13px;font-weight:500;z-index:999;box-shadow:0 8px 30px rgba(37,99,235,.4);backdrop-filter:blur(10px);white-space:nowrap';
+    msg.textContent = 'Founder access unlocked — all tools enabled';
+    document.body.appendChild(msg);
+    setTimeout(function() { msg.style.opacity='0'; msg.style.transition='opacity .5s'; setTimeout(function(){msg.remove();},500); }, 3000);
+    updateNav();
+    go('dashboard');
+  }
+}
+// ── END FOUNDER ACCESS ────────────────────────────────────
+
 // ── INIT ─────────────────────────────────────────────
 renderHome();
 renderFAQ();
@@ -2667,6 +3052,24 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeTool();closeAu
     <div class="sticky-cta-text"><strong>3,400+ founders</strong> already using Launchpad</div>
     <button class="sticky-cta-btn" onclick="scrollTo2('war-room-s');hideStickyIfNeeded()">Try it free &rarr;</button>
     <button class="sticky-cta-close" onclick="dismissSticky()" title="Dismiss">&times;</button>
+  </div>
+</div>
+<!-- SHARE CARD MODAL -->
+<div class="share-modal" id="shareModal" onclick="closeShareModal(event)">
+  <div style="position:relative;max-width:480px;width:100%;margin:1rem">
+    <button class="share-close" onclick="closeShareModal()">&#x2715;</button>
+    <div class="share-box">
+      <h3>Share your results</h3>
+      <p>Your War Room report as a shareable card. Post it, send it, flex it.</p>
+      <div class="share-card-preview">
+        <canvas id="shareCardCanvas" style="width:100%;display:block"></canvas>
+      </div>
+      <div class="share-btns">
+        <button class="share-btn primary" onclick="downloadShareCard()">Download image</button>
+        <button class="share-btn tw" onclick="shareToTwitter()">Post on X</button>
+        <button class="share-btn ghost" onclick="closeShareModal()">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 </body>
