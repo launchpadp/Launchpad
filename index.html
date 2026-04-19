@@ -680,6 +680,18 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
 .refine-chips{display:flex;flex-wrap:wrap;gap:6px;padding:.5rem 1rem;border-bottom:1px solid var(--bdr)}
 .refine-chip{font-size:11px;padding:4px 12px;border-radius:99px;border:1px solid var(--bdr2);color:var(--txt2);cursor:pointer;background:transparent;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap}
 .refine-chip:hover{border-color:rgba(37,99,235,.4);color:var(--acc);background:rgba(37,99,235,.06)}
+
+/* ── EMAIL CAPTURE ───────────────────────────────────── */
+.email-cap{background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(139,92,246,.04));border:1px solid rgba(37,99,235,.15);border-radius:var(--rxl);padding:3rem 2rem;text-align:center;max-width:560px;margin:0 auto}
+.email-cap h3{font-family:'Instrument Serif',serif;font-size:1.75rem;color:#fff;margin-bottom:.5rem}
+.email-cap p{font-size:14px;color:var(--txt2);font-weight:300;margin-bottom:1.5rem}
+.email-row{display:flex;gap:8px;max-width:420px;margin:0 auto;flex-wrap:wrap}
+.email-row input{flex:1;min-width:200px;background:var(--ink2);border:1px solid var(--bdr2);border-radius:99px;padding:11px 18px;font-size:13px;color:#fff;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s}
+.email-row input:focus{border-color:rgba(37,99,235,.5)}
+.email-row input::placeholder{color:var(--txt3)}
+.email-sub-btn{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;padding:11px 22px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 0 14px var(--bglow);transition:all .2s;white-space:nowrap}
+.email-sub-btn:hover{box-shadow:0 0 24px var(--bglow)}
+.email-success{font-size:13px;color:#4ADE80;margin-top:.75rem;display:none}
 .mobnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(7,9,15,.96);backdrop-filter:blur(20px);border-top:1px solid var(--bdr);padding:.5rem 0}
 .mn-inner{display:flex;justify-content:space-around}
 .mni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;cursor:pointer;color:var(--txt3);transition:color .2s;font-size:10px;font-weight:500}
@@ -903,7 +915,7 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
       <a onclick="go('pricing')">Pricing</a>
       <a onclick="go('dashboard')">Dashboard</a>
     </div>
-    <div class="fcp">Free to start &middot; No credit card &middot; Powered by AI</div>
+    <div class="fcp">Free to start &middot; No credit card &middot; <a href="mailto:support@trylaunchpad.co" style="color:var(--txt3);text-decoration:none;opacity:.7">support@trylaunchpad.co</a></div>
   </div>
 </footer>
 </div>
@@ -1014,7 +1026,7 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
 <!-- ONBOARD -->
 <div class="mo" id="obMo">
   <div class="oboard">
-    <div class="ops"><div class="opd done" id="op1"></div><div class="opd" id="op2"></div><div class="opd" id="op3"></div></div>
+    <div class="ops"><div class="opd done" id="op1"></div><div class="opd" id="op2"></div><div class="opd" id="op3"></div><div class="opd" id="op4"></div></div>
     <div class="ostep active" id="os1">
       <h2>Welcome aboard</h2>
       <p>What stage are you at? We'll personalize your dashboard.</p>
@@ -1043,6 +1055,17 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
       <div style="background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1.5rem">
         <div style="font-size:11px;color:var(--acc);font-weight:600;margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em">Recommended first</div>
         <div id="obReco" style="font-size:14px;color:#fff;font-weight:400"></div>
+      </div>
+      <button class="obtn" onclick="nextOb(4)">Continue &rarr;</button>
+    </div>
+    <div class="ostep" id="os4">
+      <h2>What's your budget?</h2>
+      <p>We'll tailor every recommendation to what you can actually spend.</p>
+      <div class="oopts">
+        <div class="oopt" onclick="pickOpt(this,'budget','zero')"><h4>💸 $0</h4><p>Bootstrapping with zero</p></div>
+        <div class="oopt" onclick="pickOpt(this,'budget','bootstrap')"><h4>💰 Under $500/mo</h4><p>Lean and scrappy</p></div>
+        <div class="oopt" onclick="pickOpt(this,'budget','funded')"><h4>🚀 $500–$10K/mo</h4><p>Some runway to work with</p></div>
+        <div class="oopt" onclick="pickOpt(this,'budget','enterprise')"><h4>🏢 $10K+/mo</h4><p>Funded and scaling</p></div>
       </div>
       <button class="obtn" onclick="finOb()">Go to my dashboard &rarr;</button>
     </div>
@@ -2578,6 +2601,8 @@ function buildWarRoomResult(idea, r) {
     +'<div class="wr-fscore"><span class="wr-fscore-num">'+(r.market||'?')+'</span><span class="wr-fscore-lbl">Market</span></div>'
     +'<div class="wr-fscore"><span class="wr-fscore-num">'+(r.comp||'?')+'</span><span class="wr-fscore-lbl">Competition</span></div>'
     +'</div>'
+    +(r.brutalTruth?'<div style="padding:1rem 1.25rem;background:rgba(239,68,68,.06);border-top:1px solid rgba(239,68,68,.12)">'+'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#FCA5A5;margin-bottom:.4rem">Brutal Truth</div>'+'<div style="font-size:12px;color:rgba(255,200,200,.8);line-height:1.65;font-weight:300">'+r.brutalTruth+'</div></div>':'')
+    +(r.requiredPivot?'<div style="padding:1rem 1.25rem;background:rgba(34,197,94,.05);border-top:1px solid rgba(34,197,94,.1)">'+'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4ADE80;margin-bottom:.4rem">Required Pivot</div>'+'<div style="font-size:12px;color:rgba(180,255,200,.8);line-height:1.65;font-weight:300">'+r.requiredPivot+'</div></div>':'')
     +'<div class="wr-action-btns">'
     +'<button class="wr-abtn" onclick="openTool(\'pitch\')">Write full pitch &rarr;</button>'
     +'<button class="wr-abtn" onclick="openTool(\'first10\')">Full customer plan &rarr;</button>'
@@ -3494,6 +3519,31 @@ function getContextPrompt() {
 }
 // ── END CONTEXT BLOCK ─────────────────────────────────────
 
+
+// ── EMAIL CAPTURE ─────────────────────────────────────────
+function submitEmail() {
+  var input = document.getElementById('emailCapInput');
+  var success = document.getElementById('emailSuccess');
+  if(!input) return;
+  var email = input.value.trim();
+  if(!email || !email.includes('@')) {
+    input.style.borderColor = 'rgba(239,68,68,.5)';
+    setTimeout(function() { input.style.borderColor = ''; }, 2000);
+    return;
+  }
+  // Store email locally and show success
+  var emails = JSON.parse(localStorage.getItem('lp_emails') || '[]');
+  if(!emails.includes(email)) emails.push(email);
+  localStorage.setItem('lp_emails', JSON.stringify(emails));
+  input.value = '';
+  input.style.display = 'none';
+  input.parentElement.querySelector('.email-sub-btn').style.display = 'none';
+  if(success) { success.style.display = 'block'; }
+  // Log to console so you can see signups
+  console.log('Email captured:', email, '| Total:', emails.length);
+}
+// ── END EMAIL CAPTURE ─────────────────────────────────────
+
 // ── INIT ─────────────────────────────────────────────
 renderHome();
 renderFAQ();
@@ -3529,3 +3579,16 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeTool();closeAu
 </div>
 </body>
 </html>
+<!-- EMAIL CAPTURE -->
+<div style="padding:4rem 2rem;background:var(--ink2);border-top:1px solid var(--bdr)">
+  <div class="email-cap">
+    <h3>Stay in the loop</h3>
+    <p>Get notified when we launch new tools, features, and founder resources. No spam.</p>
+    <div class="email-row">
+      <input type="email" id="emailCapInput" placeholder="your@email.com" onkeydown="if(event.key==='Enter')submitEmail()">
+      <button class="email-sub-btn" onclick="submitEmail()">Notify me</button>
+    </div>
+    <div class="email-success" id="emailSuccess">You're in! We'll be in touch.</div>
+  </div>
+</div>
+
