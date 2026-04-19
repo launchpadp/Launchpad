@@ -1927,7 +1927,7 @@ async function runP(){
     +'- Make the investor or customer feel the problem before you offer the solution.\n'
     +'- End with a specific, low-friction ask. Not "let me know if interested."\n'
     +'- Write at a level that would make a YC partner lean forward, not roll their eyes.\n'
-    +CONTEXT_BLOCK
+    +getContextPrompt()
     +'Style: '+val('pto')+'. Type: '+val('pst')+'.\n\n'
     +'OUTPUT STRUCTURE:\n\n'
     +'THE PITCH\n'
@@ -2291,8 +2291,14 @@ function logout(){user=null;tier='free';localStorage.removeItem('lp_usr');update
 function selectPlan(plan){
   if(plan==='free'){if(!user){showAuth();return;}user.tier='free';tier='free';localStorage.setItem('lp_usr',JSON.stringify(user));updateNav();go('dashboard');return;}
   if(!user){showAuth();window._pp=plan;return;}
+  // Open Stripe - do NOT upgrade tier until payment verified
   window.open(STRIPE[plan],'_blank');
-  user.tier=plan;tier=plan;localStorage.setItem('lp_usr',JSON.stringify(user));updateNav();
+  // Show message explaining they need to complete payment
+  var msg=document.createElement('div');
+  msg.style.cssText='position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--ink2);border:1px solid var(--bdr2);color:var(--txt);padding:12px 24px;border-radius:99px;font-size:13px;z-index:999;box-shadow:0 8px 30px rgba(0,0,0,.4);white-space:nowrap;font-family:DM Sans,sans-serif';
+  msg.textContent='Complete payment to unlock '+plan+' features';
+  document.body.appendChild(msg);
+  setTimeout(function(){msg.style.opacity='0';msg.style.transition='opacity .5s';setTimeout(function(){msg.remove();},500);},4000);
 }
 
 // ── ONBOARDING ───────────────────────────────────────
