@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<h1 class="hero-title reveal">Stop guessing.<br>Start building<br><em>what works.</em></h1><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -721,7 +721,7 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
     <span class="ltxt">Launch<span>pad</span></span>
   </div>
   <ul class="nav-links">
-    <li><a class="nl" onclick="scrollTo2('war-room-s')" style="color:var(--acc);font-weight:500">Next Move Engine</a></li>
+    <li><a class="nl" onclick="scrollTo2('war-room-s')" style="color:var(--acc);font-weight:500">Founder Journey</a></li>
     <li><a class="nl" onclick="scrollTo2('demo-s')">How it works</a></li>
     <li><a class="nl" onclick="go('pricing')">Pricing</a></li>
     <li><a class="nl" id="dashLink" style="display:none" onclick="go('dashboard')">Dashboard</a></li>
@@ -908,7 +908,7 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
 </div>
 <!-- FINAL CTA -->
 <div style="position:relative;z-index:1;padding:6rem 2rem;text-align:center;background:var(--ink)">
-  <h2 class="sec-title reveal" style="color:#fff;margin-bottom:.75rem">Ready to stop guessing?</h2>
+  <h2 class="sec-title reveal" style="color:#fff;margin-bottom:.75rem">Start your founder journey today.</h2>
   <p class="sec-sub reveal" style="max-width:480px;margin:0 auto 2rem">Start free. No credit card. Upgrade when you're ready.</p>
   <div class="reveal" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
     <button class="btn-p" onclick="go('pricing')">Get started free &rarr;</button>
@@ -1441,10 +1441,11 @@ function getUserContext() {
 }
 
 function getContextBar() {
+  var chainBar = renderChainContext();
   var ctx = getUserContext();
   var stageLabel = {idea:'Idea Stage',build:'Building',launch:'Launched',scale:'Scaling'}[ctx.stage]||'Early Stage';
   var budgetLabel = {zero:'$0 budget',bootstrap:'Bootstrapped',funded:'Funded',enterprise:'Enterprise'}[ctx.budget]||'Bootstrapped';
-  return '<div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.12);border-radius:var(--r);padding:.625rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
+  return chainBar + '<div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.12);border-radius:var(--r);padding:.625rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
     +'<span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--txt3)">Your profile:</span>'
     +'<span style="font-size:11px;color:var(--acc);background:rgba(37,99,235,.1);padding:2px 10px;border-radius:99px">'+stageLabel+'</span>'
     +'<span style="font-size:11px;color:var(--txt2);background:var(--sur);padding:2px 10px;border-radius:99px">'+budgetLabel+'</span>'
@@ -1914,7 +1915,19 @@ async function runV(){
 
     document.getElementById('vres').innerHTML=html;
     document.getElementById('vres').style.display='block';
-    setTimeout(function(){ renderNextStep(d.verdict||'Promising','validate','vres'); }, 800);
+    setTimeout(function(){
+      // Save key findings to chain for next tools
+      saveChain('idea', idea);
+      saveChain('score', d.score);
+      saveChain('verdict', d.verdict);
+      saveChain('fatalFlaw', d.risks && d.risks[0] ? d.risks[0] : null);
+      saveChain('brutalTruth', d.brutalTruth || null);
+      saveChain('requiredPivot', d.requiredPivot || null);
+      saveChain('targetCustomer', d.targetCustomer || null);
+      saveChain('strengths', d.strengths || []);
+      saveChain('risks', d.risks || []);
+      renderNextStep(d.verdict||'Promising','validate','vres');
+    }, 800);
     setTimeout(()=>{
       // Animate score bar
       const g=document.getElementById('gf');if(g)g.style.width=d.score+'%';
@@ -3571,28 +3584,32 @@ function submitEmail() {
 // ── FOUNDER JOURNEY ───────────────────────────────────────
 var JOURNEYS = {
   'Strong Go': [
-    {tool:'pitch', label:'Write your investor pitch', reason:'Your idea scored strong. Time to articulate it.'},
-    {tool:'gtm', label:'Build your GTM strategy', reason:'You know it works. Now map how to reach customers.'},
-    {tool:'first10', label:'Find your first 10 customers', reason:'Turn your GTM into real conversations today.'},
-    {tool:'funding', label:'Check funding readiness', reason:'Strong idea + customers = fundable. Verify your score.'}
+    {tool:'validate', label:'Idea Validator', reason:'Score and validate your concept', done:true},
+    {tool:'pitch', label:'Pitch Generator', reason:'Your idea scored strong — articulate it compellingly to investors and customers.'},
+    {tool:'gtm', label:'GTM Strategy', reason:'You have a strong pitch — now build the exact path to reach your first customers.'},
+    {tool:'first10', label:'First 10 Customers', reason:'Your GTM is mapped — get the scripts to land your first real customers today.'},
+    {tool:'funding', label:'Funding Readiness', reason:'Customers + traction = fundable. Check your investor readiness score.'}
   ],
   'Promising': [
-    {tool:'kill', label:'Find your fatal flaw', reason:'Good score but not perfect — find what could kill this.'},
-    {tool:'first10', label:'Find your first 10 customers', reason:'Validation comes from customers, not scores.'},
-    {tool:'gtm', label:'Build your GTM strategy', reason:'You have customers in mind — now build the path to reach them.'},
-    {tool:'pitch', label:'Write your pitch', reason:'Promising ideas need a sharp pitch to stand out.'}
+    {tool:'validate', label:'Idea Validator', reason:'Score and validate your concept', done:true},
+    {tool:'kill', label:'Kill My Idea', reason:'Good score but not perfect — find the exact flaw before you build.'},
+    {tool:'first10', label:'First 10 Customers', reason:'Real customers validate faster than any score. Find them now.'},
+    {tool:'gtm', label:'GTM Strategy', reason:'You know your customer — build the channel strategy to reach them at scale.'},
+    {tool:'pitch', label:'Pitch Generator', reason:'Armed with customer insights and GTM — write a pitch that actually lands.'}
   ],
   'Needs Work': [
-    {tool:'kill', label:'Find every reason this fails', reason:'Before pivoting, understand exactly what needs to change.'},
-    {tool:'gtm', label:'Rethink your go-to-market', reason:'The market exists — your approach needs work.'},
-    {tool:'first10', label:'Find 10 people who need this', reason:'Customer conversations will show you the real pivot.'},
-    {tool:'pitch', label:'Reframe your pitch', reason:'A better angle might unlock the whole thing.'}
+    {tool:'validate', label:'Idea Validator', reason:'Score and validate your concept', done:true},
+    {tool:'kill', label:'Kill My Idea', reason:'Before you pivot, understand every reason this fails with precision.'},
+    {tool:'compare', label:'Idea vs Idea', reason:'Compare this idea against a stronger variation — find the better angle.'},
+    {tool:'gtm', label:'GTM Strategy', reason:'New angle found — build the go-to-market for the pivoted version.'},
+    {tool:'first10', label:'First 10 Customers', reason:'Prove the pivot works. Find 10 people who need the new version.'}
   ],
   'High Risk': [
-    {tool:'kill', label:'Get the full brutal breakdown', reason:'Know exactly why this fails before you invest more time.'},
-    {tool:'compare', label:'Compare this to another idea', reason:'You might have a better idea — find out now.'},
-    {tool:'gtm', label:'Is there a different market?', reason:'Same problem, different customer — might be the pivot.'},
-    {tool:'first10', label:'Find even 3 people who need this', reason:'If you cannot find 3, the idea is dead. If you can, pivot toward them.'}
+    {tool:'validate', label:'Idea Validator', reason:'Score and validate your concept', done:true},
+    {tool:'kill', label:'Kill My Idea', reason:'Get the complete breakdown of why this fails — before wasting more time.'},
+    {tool:'compare', label:'Idea vs Idea', reason:'You likely have a better idea. Find out which one is actually worth building.'},
+    {tool:'gtm', label:'GTM Strategy', reason:'Same problem, different customer type — this might be the real pivot.'},
+    {tool:'first10', label:'First 10 Customers', reason:'If you can find even 3 people who need this, the idea has a pulse.'}
   ]
 };
 
@@ -3645,6 +3662,67 @@ function openNextStep(toolId, idea, btn) {
   openTool(toolId);
 }
 // ── END FOUNDER JOURNEY ───────────────────────────────────
+
+
+// ── CONTEXT CHAIN SYSTEM ──────────────────────────────────
+// Stores key findings from each tool to pass forward
+var CHAIN = {
+  idea: '',
+  score: null,
+  verdict: null,
+  fatalFlaw: null,
+  brutalTruth: null,
+  requiredPivot: null,
+  targetCustomer: null,
+  strengths: [],
+  risks: [],
+  customerScript: null,
+  gtmChannel: null,
+  pitchOutput: null
+};
+
+function saveChain(key, value) {
+  CHAIN[key] = value;
+  try { localStorage.setItem('lp_chain', JSON.stringify(CHAIN)); } catch(e){}
+}
+
+function loadChain() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('lp_chain')||'{}');
+    Object.keys(saved).forEach(function(k){ CHAIN[k] = saved[k]; });
+  } catch(e){}
+}
+
+function getChainContext() {
+  var ctx = '';
+  if(CHAIN.score) ctx += 'Viability Score: '+CHAIN.score+'/100 ('+CHAIN.verdict+')\n';
+  if(CHAIN.fatalFlaw) ctx += 'Fatal Flaw: '+CHAIN.fatalFlaw+'\n';
+  if(CHAIN.brutalTruth) ctx += 'Brutal Truth: '+CHAIN.brutalTruth+'\n';
+  if(CHAIN.requiredPivot) ctx += 'Required Pivot: '+CHAIN.requiredPivot+'\n';
+  if(CHAIN.targetCustomer) ctx += 'Target Customer: '+CHAIN.targetCustomer+'\n';
+  if(CHAIN.risks && CHAIN.risks.length) ctx += 'Key Risks: '+CHAIN.risks.join(', ')+'\n';
+  if(CHAIN.customerScript) ctx += 'Customer Acquisition Approach: '+CHAIN.customerScript+'\n';
+  if(CHAIN.gtmChannel) ctx += 'Primary GTM Channel: '+CHAIN.gtmChannel+'\n';
+  return ctx ? '\n\nPREVIOUS ANALYSIS CONTEXT (use this to give more specific advice):\n'+ctx+'\n' : '';
+}
+
+function renderChainContext(toolName) {
+  if(!CHAIN.score && !CHAIN.fatalFlaw) return '';
+  var items = [];
+  if(CHAIN.score) items.push('<span style="background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.2);color:#60A5FA;font-size:10px;padding:2px 10px;border-radius:99px;white-space:nowrap">Score: '+CHAIN.score+'/100</span>');
+  if(CHAIN.verdict) items.push('<span style="background:rgba(37,99,235,.08);color:var(--txt2);font-size:10px;padding:2px 10px;border-radius:99px;border:1px solid var(--bdr2);white-space:nowrap">'+CHAIN.verdict+'</span>');
+  if(CHAIN.fatalFlaw) items.push('<span style="background:rgba(239,68,68,.08);color:#FCA5A5;font-size:10px;padding:2px 10px;border-radius:99px;border:1px solid rgba(239,68,68,.2);white-space:nowrap">Fatal flaw identified</span>');
+  if(CHAIN.targetCustomer) items.push('<span style="background:rgba(251,191,36,.08);color:#FBBF24;font-size:10px;padding:2px 10px;border-radius:99px;border:1px solid rgba(251,191,36,.2);white-space:nowrap">Customer profiled</span>');
+  if(!items.length) return '';
+  return '<div style="background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.1);border-radius:var(--r);padding:.625rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+    +'<span style="font-size:10px;color:var(--txt3);font-weight:500;white-space:nowrap">From your journey:</span>'
+    +items.join('')
+    +'</div>';
+}
+
+// Load chain on startup
+loadChain();
+// ── END CONTEXT CHAIN ─────────────────────────────────────
 
 // ── INIT ─────────────────────────────────────────────
 renderHome();
