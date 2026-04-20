@@ -1417,6 +1417,8 @@ function getStageConfig(stage) {
 }
 
 function renderDash(){
+  loadOS();
+  loadSessionOutputs();
   updateFounderBriefing();
   renderSessionHistory();
   if(!user){go('home');return;}
@@ -1436,6 +1438,12 @@ function renderDash(){
   var greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
   dg.textContent = greeting + ', ' + n;
+  // If OS has an idea, hide the old stage-based dashboard content
+  // and let the Founder Briefing take center stage
+  var hasIdea = OS && OS.idea && OS.idea.length > 0;
+  var oldDash = document.getElementById('dtgrid');
+  var nextMove = document.getElementById('dnext');
+  if(hasIdea && oldDash) { oldDash.style.opacity='.5'; }
   ds.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;background:'+sc.bg+';border:1px solid '+sc.color+'33;color:'+sc.color+';font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;letter-spacing:.05em">'+sc.name+'</span>';
 
   var tl={free:'Free Plan',pro:'Pro &mdash; $14.99/mo',elite:'Elite &mdash; $24.99/mo'};
@@ -4106,6 +4114,11 @@ function updateFounderBriefing() {
   var el = document.getElementById('founderBriefing');
   if(!el) return;
 
+  // Reload OS from localStorage to ensure freshest data
+  try {
+    var freshOS = JSON.parse(localStorage.getItem('lp_os')||'{}');
+    if(freshOS && freshOS.idea) Object.assign(OS, freshOS);
+  } catch(e){}
   var idea = OS.idea || getAutoFillIdea() || '';
   var ideaShort = idea.length > 80 ? idea.slice(0,77)+'...' : idea;
 
@@ -4179,7 +4192,7 @@ function updateFounderBriefing() {
     +'<div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.625rem">Journey progress</div>'
     +'<div style="display:flex;align-items:center;gap:0">'+phaseHtml+'</div>'
     +'</div>'
-    +(OS.score?
+    +(OS.score !== null && OS.score !== undefined?
       '<div style="padding:1rem 1.25rem;border-top:1px solid var(--bdr)">'
       +'<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">'
       +'<div style="font-family:serif;font-size:2.5rem;color:'+(OS.score>=70?'#4ADE80':OS.score>=50?'#60A5FA':'#FCA5A5')+';line-height:1">'+OS.score+'</div>'
