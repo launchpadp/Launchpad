@@ -709,6 +709,16 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
 .hls-item.done{color:#4ADE80}
 .hls-item.active{color:var(--acc)}
 @media(max-width:600px){.hero-idea-input{padding-right:1.4rem;padding-bottom:3.5rem}.hero-run-btn{right:12px;top:auto;bottom:12px;transform:none}.hero-run-btn:hover{transform:scale(1.02)}}
+
+/* ── SESSION HISTORY ─────────────────────────────────── */
+.session-card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rl);overflow:hidden;margin-bottom:.75rem;transition:border .2s}
+.session-card:hover{border-color:var(--bdr2)}
+.session-card-header{padding:.875rem 1.1rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:1rem}
+.session-card-title{font-size:13px;font-weight:500;color:#fff}
+.session-card-meta{font-size:11px;color:var(--txt3);font-weight:300}
+.session-card-body{border-top:1px solid var(--bdr);padding:1rem 1.1rem;display:none;font-size:12px;color:var(--txt2);line-height:1.75;white-space:pre-wrap;font-weight:300;max-height:400px;overflow-y:auto}
+.session-card-body.open{display:block}
+.session-empty{text-align:center;padding:3rem 1rem;color:var(--txt3);font-size:13px;font-weight:300}
 .mobnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(7,9,15,.96);backdrop-filter:blur(20px);border-top:1px solid var(--bdr);padding:.5rem 0}
 .mn-inner{display:flex;justify-content:space-around}
 .mni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;cursor:pointer;color:var(--txt3);transition:color .2s;font-size:10px;font-weight:500}
@@ -1073,6 +1083,13 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
     <div class="dmain">
   <!-- FOUNDER BRIEFING -->
   <div id="founderBriefing" style="margin-bottom:1.5rem"></div>
+
+  <!-- SESSION HISTORY -->
+  <div style="margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3)">Output History</div>
+    <button onclick="clearSessionHistory()" style="background:none;border:none;color:var(--txt3);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline">Clear all</button>
+  </div>
+  <div id="sessionHistory"><div class="session-empty">No outputs yet. Run any tool to see your results here.</div></div>
       <div class="dgreet" id="dgreet">Welcome back</div>
       <div class="dsub" id="dsub">Your AI toolkit is ready.</div>
       <div class="dtier" id="dtier"></div>
@@ -1401,6 +1418,7 @@ function getStageConfig(stage) {
 
 function renderDash(){
   updateFounderBriefing();
+  renderSessionHistory();
   if(!user){go('home');return;}
   var n=user.name.split(' ')[0];
   var dg=document.getElementById('dgreet');
@@ -1730,7 +1748,7 @@ function ld(b,i,s,on,msg){
 }
 var MASTER_SYSTEM='You are a brutally honest startup investor and operator with 20 years of experience. You have funded 200 companies and passed on 10,000. You know within 60 seconds whether an idea is worth pursuing. Your job is not to validate ideas — it is to force clear, real-world decisions. You do not give generic startup advice. Ever.\n\nCORE IDENTITY:\n- You think like a YC partner, operate like a first-principles founder, and challenge like a skeptical investor.\n- You form strong opinions and state them clearly. No fence-sitting.\n- You prioritize the single most important thing — not a list of equal concerns.\n- You are specific to this exact idea, this exact founder, this exact market. Nothing generic.\n\nNON-NEGOTIABLE RULES:\n- Take a clear stance: Bad idea, Needs major pivot, or Worth pursuing. No hedging.\n- Prioritize the single biggest risk. Do not dilute it with minor concerns.\n- If strong existing solutions dominate, explicitly state why users would not switch — and be honest about what this means for viability.\n- Tie every recommendation to the founder\'s actual constraints: budget, customer type, and stage.\n- Include a brutal truth: one direct statement explaining why this fails if built as-is.\n- Include a required pivot: the one condition that must be met for this to work.\n- Never say \'talk to users\' or \'build an MVP\' without naming exactly who, exactly what, exactly where.\n- Give only the 2 highest-leverage actions executable in 48 hours. Not 5. Not 10. Two.\n- End with a clear binary signal: what success looks like vs what means stop immediately.\n\nBUDGET RULES — apply to every recommendation:\n- $0 budget: only free organic tactics. No paid tools, no ad spend, no subscriptions.\n- Under $500/month: high-ROI only. Name the specific tool and expected return.\n- $500-$10K/month: scalable paid and organic. Name specific channels and budgets.\n- $10K+/month: enterprise playbook. Partnerships, PR, outbound sales infrastructure.\n\nCUSTOMER TYPE RULES — adapt every channel recommendation:\n- B2C consumers: TikTok, Instagram, referral mechanics, community. Never cold B2B email.\n- Small businesses: Google Ads, local SEO, direct owner outreach, agency partnerships.\n- Startups and founders: Product Hunt, Hacker News, founder Slack communities, X build-in-public.\n- Enterprise: LinkedIn outbound, procurement channels, pilot programs, executive sponsorship.\n\nWRITING RULES:\n- Write like you are talking to the founder across a table. Direct. No filler.\n- Every sentence must either reveal a risk, identify an opportunity, or drive an action.\n- If you are not 90 percent confident in a recommendation, do not include it.\n- Make the founder feel slightly uncomfortable. Comfortable advice is useless advice.';
 async function ai(prompt,tok){
-  tok=tok||1500;
+  tok=tok||1000;
   const r=await fetch('https://launchpad-api.dpatel0729.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:tok,system:MASTER_SYSTEM,messages:[{role:'user',content:prompt}]})});
   const d=await r.json();
   return d.content.map(x=>x.text||'').join('');
@@ -1934,7 +1952,7 @@ function showSteps(containerId,steps){
 function cpLastOut(btn){
   navigator.clipboard.writeText(lastOut).then(()=>{
     const b=btn||document.getElementById('cpBtn');
-    if(b){const orig=b.textContent;b.textContent='Copied!';setTimeout(()=>b.textContent=orig,2000);}
+    if(b){const orig=b.textContent;b.textContent='Copied!';setTimeout(()=>b.textContent=orig,1400);}
   });
 }
 
@@ -2117,6 +2135,7 @@ async function runP(){
     lastOut=txt;
     document.getElementById('pres').innerHTML=outBlock(txt,'Your pitch',{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',toolName:'Pitch Generator'});
     document.getElementById('pres').style.display='block';
+    saveOutput('Pitch Generator','🎯',idea,txt);
     attachRefine('pres','Pitch Generator',idea,txt);
     setTimeout(function(){ renderNextStep(mget('lastVerdict')||'Promising','pitch','pres'); }, 500);
     const b=document.getElementById('cpBtn');if(b)b.onclick=()=>cpLastOut(b);
@@ -2161,6 +2180,7 @@ async function runG(){
     document.getElementById('gres').innerHTML=outBlock(txt,'Your GTM strategy',{icon:'&#x1F4C8;',toolName:'GTM Strategy Builder'});
     document.getElementById('gres').style.display='block';
     const b=document.getElementById('cpBtn');if(b)b.onclick=()=>cpLastOut(b);
+    saveOutput('GTM Strategy',idea,txt);
     attachRefine('gres','GTM Strategy Builder',idea,txt);
     setTimeout(function(){ renderNextStep(mget('lastVerdict')||'Promising','gtm','gres'); },800);
   }catch(e){const m=document.getElementById('gm');if(m)m.textContent='Something went wrong.';}
@@ -2200,11 +2220,12 @@ async function runF10(){
   const prompt='You are an elite growth operator and early-stage founder coach. You have helped 300+ startups get their first customers. You do not give generic advice. Ever.\n\nA founder needs their first customers FAST. Your job is to give them an unfair edge — the kind of advice that feels slightly uncomfortable because it actually works.\n\nBusiness: "'+idea+'"\nCustomer type: '+custType+'\nBudget: '+budget+'\n\nWRITING RULES — non-negotiable:\n- Write like a founder talking to another founder. Sharp. Direct. Slightly aggressive.\n- No corporate language. No telling them to leverage social media No "build brand awareness."\n- Every line must cause action or be cut.\n- Assume they have no connections, no budget, limited time.\n- Prioritize speed over perfection. Revenue over polish.\n\n---\n\nOUTPUT STRUCTURE — use exactly these sections:\n\nDO THIS IN THE NEXT 24 HOURS\n'+priorityBlock+'\n\nYOUR CUSTOMER IN ONE PARAGRAPH\n[Not a demographic. One specific person. What did they Google at 11pm? What have they already tried and failed at? What embarrasses them about this problem? Make it so specific the founder thinks "that is exactly who I am building for."]\n\nUNFAIR ADVANTAGE MOVES\n[List 4-6 tactics that feel borderline uncomfortable. These are not "best practices." These are the moves most founders are too scared to try — which is exactly why they work. Examples of the right energy: infiltrating private Slack groups, posing as a frustrated customer in competitor communities, creating fake urgency around early access, engineering public moments that force your customer to find you. Make each one specific to this business. Each should take under 2 hours to execute.]\n\n1. [Tactic name]: [What to do, where, and exactly how. Include the script or message if relevant.]\n2. [Tactic name]: [Same format]\n3. [Tactic name]: [Same format]\n4. [Tactic name]: [Same format]\n5. [Tactic name]: [Same format]\n\nTHE 3 CHANNELS (one must surprise them)\n[Not Reddit, Discord, LinkedIn as top picks. Give 2 expected + 1 unexpected channel nobody in their market is using.]\n\nChannel 1: [Name]\nWho is here: [specific description]\nExact search: "[copy-paste query]"\nTarget: posts with [specific signal - views, comments, timing]\nEngage: within [X] minutes of posting - [why timing matters here]\nScript: "[copy-paste opening line]"\nExpected: [X] conversations per [Y] hours\n\nChannel 2: [Same format]\n\nChannel 3 - THE ONE NOBODY IS USING:\n[Name + why zero competitors are here]\nExact execution: [step by step]\nWhy this works: [the real insight]\nExpected: [realistic outcome]\n\n3 MESSAGES BUILT TO GET REPLIES\n[Not safe. Not polite. These should create a "wait, who is this?" moment. Optimize for curiosity and pattern interruption.]\n\nForum/community (slightly provocative):\n[Full message. 3 sentences max. Line 1 stops the scroll. Last line is a question they cannot say no to. No "Hi, I am building..." opener.]\n\nCold DM (direct, uncomfortable in a good way):\n[Under 50 words. References something specific about them. Makes them feel seen without being creepy.]\n\nCold email:\nSubject: [5 words max. Personal, not templated.]\nBody: [Under 60 words. Pain in sentence 1. Solution in sentence 2. Ask in sentence 3: "Giving 5 people free access for 20 minutes of honest feedback. You in?"]\n\nWHEN THEY RESPOND - closing script\n[What to say when someone bites. Acknowledge + mild urgency + one low-friction commitment. Pre-sell before you build if possible.]\nIf they go cold: [exact follow-up move]\nCapture info with: [specific free tool, 30 seconds to set up]\n\nSUCCESS CHECKPOINT\nAfter 10 conversations:\nContinue if: [X]/10 said [specific phrase or showed specific behavior]\nPivot if: fewer than [X] showed [specific signal]\nThe one question to ask in every conversation: "[exact question]"\nIf they answer [X], you have product-market fit signal.\n\nREALITY CHECK\nContacts needed for 10 conversations: ~[X]\nDaily time commitment: ~[X] hours of focused work\nFirst paying customer: day [X] if you do this daily\nBiggest time waster to avoid: [specific, honest]\nIf you only have 2 hours today: [single action, nothing else]';
 
   try{
-    const txt=await ai(prompt,2500);
+    const txt=await ai(prompt,1600);
     lastOut=txt;
     document.getElementById('f10res').innerHTML='<div style="background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.15);border-radius:var(--r);padding:1.5rem 1.6rem;margin-top:.875rem"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#FBBF24;font-weight:600">First 10 Customers - Execution Playbook</span><span style="font-size:11px;color:rgba(251,191,36,.45);font-weight:300">48hr optimized - '+budget+'</span></div><div style="font-size:13px;line-height:1.95;color:var(--txt2);white-space:pre-line;font-weight:300">'+txt.trim()+'</div></div><div class="shr" style="margin-top:9px;background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.2);color:#FBBF24"><span>Your customer acquisition playbook</span><button class="cbtn" style="color:#FBBF24" id="cpBtn">Copy</button></div>';
     document.getElementById('f10res').style.display='block';
     const b=document.getElementById('cpBtn');if(b)b.onclick=function(){cpLastOut(b);};
+    saveOutput('First 10 Customers','👥',idea,txt);
     attachRefine('f10res','First 10 Customers',idea,txt);
     setTimeout(function(){ renderNextStep(mget('lastVerdict')||'Promising','first10','f10res'); },800);
   }catch(e){const m=document.getElementById('f10m');if(m)m.textContent='Something went wrong - try again.';}
@@ -2221,7 +2242,7 @@ async function runB(){
   const prompt='You are a founder-operator who has built and scaled multiple startups. You do not give polished consulting advice. You give the advice you wish someone had given you on day one.\n\nWrite a business plan for this idea. But not the kind that impresses MBAs. The kind that actually gets a founder to first revenue.\n\nBusiness: "'+idea+'"\nIndustry: '+val('bind')+'\nFunding goal: '+val('bfund')+'\n\nWRITING RULES:\n- Sound like a founder talking to a founder. Sharp. Direct. No fluff.\n- Prioritize execution over strategy. Action over theory.\n- Assume $0 budget, no connections, 30 days to prove this works.\n- Every recommendation must be specific. No telling them to leverage social media No "build brand awareness."\n- Be slightly contrarian where conventional advice would fail them.\n- Think: what would a scrappy first-time founder actually do?\n\nOUTPUT STRUCTURE - use exactly these sections:\n\nTHE ONE-LINE TRUTH\n[Cut through everything. One sentence that captures the real business opportunity and why it can work. Blunt. No buzzwords.]\n\nPROBLEM & SOLUTION\n[2-3 sentences. The specific pain. Why existing solutions fail. What you do differently. No "we leverage AI to revolutionize."]\n\nWHO ACTUALLY BUYS THIS\n[One vivid paragraph. Not a demographic. A specific person with a specific frustration. The moment they pull out their credit card.]\n\nMARKET OPPORTUNITY\n[Be real. TAM/SAM/SOM if relevant - but what actually matters is: is there enough pain, are there enough people, and can you reach them? Answer those 3 questions specifically.]\n\nBUSINESS MODEL\nHow you make money: [specific pricing and structure]\nWhy people will pay: [the real reason, not "value proposition"]\nUnit economics: [rough math - what does 1 customer cost to acquire vs revenue they generate?]\nPath to $10K MRR: [exactly how many customers at what price]\n\nDO THIS IN THE NEXT 24 HOURS\n[ONLY 2-4 actions. Each must directly lead to a customer conversation or validation signal. Ultra-specific. Include exact platforms, messages, and scripts where relevant.]\n\n1. [Action]: [Exact steps + what to say + where + expected outcome]\n2. [Action]: [Exact steps + what to say + where + expected outcome]\n3. [Action if applicable]\n\nUNFAIR ADVANTAGE MOVES\n[4-6 tactics that feel slightly uncomfortable but work. Not best practices. The moves competitors are not doing because they require nerve. Make each specific to this business.]\n\n1. [Tactic]: [What, where, how, expected result]\n2. [Tactic]: [What, where, how, expected result]\n3. [Tactic]: [What, where, how, expected result]\n4. [Tactic]: [What, where, how, expected result]\n5. [Tactic]: [What, where, how, expected result]\n\nEXECUTION TIMELINE\n[7-14 days if early stage. Day by day or phase by phase. Only the actions that actually matter. No "research competitors" or "finalize branding."]\n\nDays 1-2: [Specific actions - validation]\nDays 3-5: [Specific actions - first conversations]\nDays 6-9: [Specific actions - first revenue attempt]\nDays 10-14: [Specific actions - iterate or double down]\n\nPATH TO FIRST REVENUE\n[Break down the math. How many people do you need to contact to get 10 conversations? How many conversations to get 1 customer? What is the price? Show the arithmetic clearly.]\n\nExample:\nContact [X] people per day\n[Y]% reply = [Z] conversations per week\n[A]% convert = [B] customers per week\nAt $[price]/month = $[MRR] within [timeframe]\n\nChannels and why they work for this specific business: [list 2-3 with rationale]\n\nWHAT WILL KILL THIS FAST\n[3-5 brutally honest failure points. Not generic risks. Execution risks specific to this business and this founder situation. The things that actually kill startups at this stage.]\n\n1. [Risk]: [Why it kills you + how to avoid it]\n2. [Risk]: [Why it kills you + how to avoid it]\n3. [Risk]: [Why it kills you + how to avoid it]\n4. [Risk if applicable]\n\nCOMPETITIVE REALITY\n[Who actually competes with this. What they do well. The one gap they have left open that you can own. Be honest - if the competition is strong, say so and explain how you win anyway.]\n\nTHE 90-DAY SCORECARD\n[3-5 specific metrics that will tell you if this is working. Not vanity metrics. The numbers that actually predict success.]\n\nBy day 30: [specific measurable milestone]\nBy day 60: [specific measurable milestone]\nBy day 90: [specific measurable milestone - this is your go/no-go signal]';
 
   try{
-    const txt=await ai(prompt,3000);
+    const txt=await ai(prompt,1400);
     lastOut=txt;
     document.getElementById('bres').innerHTML='<div style="background:rgba(37,99,235,.03);border:1px solid rgba(37,99,235,.15);border-radius:var(--r);padding:1.5rem 1.6rem;margin-top:.875rem"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--acc);font-weight:600;margin-bottom:1rem">Business Plan - Execution Edition</div><div style="font-size:13px;line-height:1.95;color:var(--txt2);white-space:pre-line;font-weight:300">'+txt.trim()+'</div></div><div class="shr" style="margin-top:9px"><span>Your business plan</span><button class="cbtn" id="cpBtn">Copy</button></div>';
     document.getElementById('bres').style.display='block';
@@ -2313,11 +2334,12 @@ async function runK(){
     +'[A specific variation with materially better odds. Real reason why it improves the model.]\n\n'
     +'YOUR UNFAIR ADVANTAGE MOVES\n'
     +'[4 moves that give them the best shot. Non-obvious. Specific to this market and budget.]'
-    +'\n\nIdea: "'+idea+'"',1800);
+    +'\n\nIdea: "'+idea+'"',1400);
     lastOut=txt;
     document.getElementById('kres').innerHTML='<div style="background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--r);padding:1.4rem 1.5rem;margin-top:.875rem"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#FCA5A5;font-weight:600;margin-bottom:.875rem">Kill My Idea - Devil\'s Advocate Report</div><div style="font-size:13px;line-height:1.9;color:var(--txt2);white-space:pre-line;font-weight:300">'+txt.trim()+'</div></div><div class="shr" style="margin-top:9px;background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.18);color:#FCA5A5"><span>Your brutal honest feedback</span><button class="cbtn" style="color:#FCA5A5" id="cpBtn">Copy</button></div>';
     document.getElementById('kres').style.display='block';
     const b=document.getElementById('cpBtn');if(b)b.onclick=()=>cpLastOut(b);
+    saveOutput('Kill My Idea','🔪',idea,txt);
     attachRefine('kres','Kill My Idea',idea,txt);
     var killLines=txt.split('\n').filter(function(l){return l.trim().length>20;});
     if(killLines.length>0) saveChain('fatalFlaw',killLines[0].replace(/[*#]/g,'').trim().slice(0,150));
@@ -2366,7 +2388,7 @@ async function runFund(){
     +'[3 specific investor profiles: fund name or type, check size, stage focus, why they fit, where to find them.]\n\n'
     +'WHAT KILLS THIS RAISE\n'
     +'[3 specific reasons this raise fails. Not market risk. Execution and positioning risks specific to this company at this stage.]'
-    +'\n\nStartup: "'+idea+'"',2000);
+    +'\n\nStartup: "'+idea+'"',1400);
     lastOut=txt;
     document.getElementById('fdres').innerHTML='<div style="background:rgba(139,92,246,.04);border:1px solid rgba(139,92,246,.15);border-radius:var(--r);padding:1.4rem 1.5rem;margin-top:.875rem"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#C4B5FD;font-weight:600;margin-bottom:.875rem">Funding Readiness Score</div><div style="font-size:13px;line-height:1.9;color:var(--txt2);white-space:pre-line;font-weight:300">'+txt.trim()+'</div></div><div class="shr" style="margin-top:9px;background:rgba(139,92,246,.06);border-color:rgba(139,92,246,.18);color:#C4B5FD"><span>Your funding readiness report</span><button class="cbtn" style="color:#C4B5FD" id="cpBtn">Copy</button></div>';
     document.getElementById('fdres').style.display='block';
@@ -3615,7 +3637,7 @@ async function sendRefine(containerId, chipText) {
     var safeMsg = (userMsg||'').slice(0,300);
     var prompt = 'Elite startup advisor. Tool: '+ctx.toolName+'. Idea: '+safeIdea+'. Previous output: '+safeOut+'. Founder feedback: '+safeMsg+'. Regenerate incorporating their feedback. Same quality and structure. Specific, direct, actionable. Write like a founder to a founder.';
 
-    var txt = await ai(prompt, 1200);
+    var txt = await ai(prompt, 900);
     ctx.lastOutput = txt;
     refineContexts[containerId] = ctx;
 
@@ -3910,7 +3932,7 @@ async function runHeroValidator() {
   var idea = document.getElementById('heroIdea').value.trim();
   if(!idea || idea.length < 10) {
     var ta = document.getElementById('heroIdea');
-    if(ta) { ta.style.borderColor='rgba(239,68,68,.5)'; setTimeout(function(){ta.style.borderColor='';},2000); }
+    if(ta) { ta.style.borderColor='rgba(239,68,68,.5)'; setTimeout(function(){ta.style.borderColor='';},1400); }
     return;
   }
 
@@ -4213,12 +4235,89 @@ function shareBriefing() {
 }
 // ── END FOUNDER BRIEFING ──────────────────────────────────
 
+
+// ── SESSION HISTORY ───────────────────────────────────────
+var SESSION_OUTPUTS = [];
+
+function saveOutput(toolName, toolIcon, idea, output) {
+  var entry = {
+    id: Date.now(),
+    tool: toolName,
+    icon: toolIcon,
+    idea: idea ? idea.slice(0,80) : '',
+    output: output,
+    ts: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+  };
+  SESSION_OUTPUTS.unshift(entry); // newest first
+  if(SESSION_OUTPUTS.length > 20) SESSION_OUTPUTS = SESSION_OUTPUTS.slice(0,20);
+  try { localStorage.setItem('lp_session', JSON.stringify(SESSION_OUTPUTS)); } catch(e){}
+  renderSessionHistory();
+}
+
+function loadSessionOutputs() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('lp_session')||'[]');
+    SESSION_OUTPUTS = saved;
+  } catch(e){}
+}
+
+function toggleSessionCard(id) {
+  var body = document.getElementById('scb-'+id);
+  if(body) body.classList.toggle('open');
+}
+
+function renderSessionHistory() {
+  var el = document.getElementById('sessionHistory');
+  if(!el) return;
+  if(!SESSION_OUTPUTS.length) {
+    el.innerHTML = '<div class="session-empty">No outputs yet. Run any tool to see your results here.</div>';
+    return;
+  }
+  el.innerHTML = SESSION_OUTPUTS.map(function(entry) {
+    return '<div class="session-card">'
+      +'<div class="session-card-header" onclick="toggleSessionCard('+entry.id+')">'
+      +'<div>'
+      +'<div class="session-card-title">'+entry.tool+'</div>'
+      +(entry.idea?'<div class="session-card-meta">'+entry.idea+'</div>':'')
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<span class="session-card-meta">'+entry.ts+'</span>'
+      +'<button onclick="event.stopPropagation();copySessionOutput('+entry.id+')" style="background:var(--sur2);border:1px solid var(--bdr);color:var(--txt3);padding:3px 10px;border-radius:99px;font-size:10px;cursor:pointer">Copy</button>'
+      +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--txt3);flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>'
+      +'</div>'
+      +'</div>'
+      +'<div class="session-card-body" id="scb-'+entry.id+'">'+entry.output+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function copySessionOutput(id) {
+  var entry = SESSION_OUTPUTS.find(function(e){ return e.id===id; });
+  if(entry) {
+    navigator.clipboard.writeText(entry.output).then(function(){
+      var btn = event.target;
+      btn.textContent='Copied!';
+      setTimeout(function(){ btn.textContent='Copy'; },2000);
+    });
+  }
+}
+
+function clearSessionHistory() {
+  if(confirm('Clear all saved outputs?')) {
+    SESSION_OUTPUTS = [];
+    localStorage.removeItem('lp_session');
+    renderSessionHistory();
+  }
+}
+// ── END SESSION HISTORY ───────────────────────────────────
+
 // ── INIT ─────────────────────────────────────────────
 renderHome();
 renderFAQ();
 updateNav();
 checkFounderAccess();
 loadOS();
+loadSessionOutputs();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeTool();closeAuth();}});
 </script>
 <!-- STICKY CTA -->
