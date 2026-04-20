@@ -1830,7 +1830,8 @@ async function runV(){
   if(limitHit()){
     document.getElementById('vres').innerHTML=nudge('<strong>3 free validations used today.</strong> Upgrade to Pro for unlimited access and full results.');
     document.getElementById('vres').style.display='block';
-    renderNextStep(d.verdict, 'validate', 'vres');return;
+    setTimeout(function(){ renderNextStep(d.verdict||'Promising', 'validate', 'vres'); }, 500);
+    return;
   }
   countUse();
   const btn=document.getElementById('vbtn'),ic=document.getElementById('vi');
@@ -1989,8 +1990,7 @@ async function runP(){
     document.getElementById('pres').innerHTML=outBlock(txt,'Your pitch',{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',toolName:'Pitch Generator'});
     document.getElementById('pres').style.display='block';
     attachRefine('pres','Pitch Generator',idea,txt);
-    var verd=mget('lastVerdict')||'Promising';
-    renderNextStep(verd,'pitch','pres');
+    setTimeout(function(){ renderNextStep(mget('lastVerdict')||'Promising','pitch','pres'); }, 500);
     const b=document.getElementById('cpBtn');if(b)b.onclick=()=>cpLastOut(b);
   }catch(e){const m=document.getElementById('pm');if(m)m.textContent='Something went wrong.';}
   ld('pbtn','pi','pm',false,'','');
