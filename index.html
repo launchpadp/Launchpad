@@ -4223,15 +4223,22 @@ function updateFounderBriefing() {
     +'<div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.625rem">Journey progress</div>'
     +'<div style="display:flex;align-items:center;gap:0">'+phaseHtml+'</div>'
     +'</div>'
-    +(OS.score || OS.fatalFlaw || OS.verdict?
-      '<div style="padding:1rem 1.25rem;border-top:1px solid var(--bdr)">'
-      +'<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">'
+    +'<div style="border-top:1px solid var(--bdr);padding:1rem 1.25rem">'
+    +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);margin-bottom:.625rem">Idea Intelligence</div>'
+    +(OS.score?
+      '<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem">'
       +'<div style="font-family:serif;font-size:2.5rem;color:'+(OS.score>=70?'#4ADE80':OS.score>=50?'#60A5FA':'#FCA5A5')+';line-height:1">'+OS.score+'</div>'
       +'<div><div style="font-size:10px;color:var(--txt3)">Viability Score</div><div style="font-size:13px;font-weight:500;color:#fff">'+OS.verdict+'</div></div>'
       +'</div>'
-      +'</div>':
-      section('Idea Intelligence','var(--acc)',null,'validate','Idea Validator')
+      +(OS.brutalTruth?'<div style="font-size:11px;font-weight:600;color:#FCA5A5;margin-bottom:.25rem">BRUTAL TRUTH</div><div style="font-size:12px;color:rgba(255,200,200,.8);line-height:1.65;margin-bottom:.75rem">'+OS.brutalTruth+'</div>':'')
+      +(OS.requiredPivot?'<div style="font-size:11px;font-weight:600;color:#4ADE80;margin-bottom:.25rem">REQUIRED PIVOT</div><div style="font-size:12px;color:rgba(180,255,200,.8);line-height:1.65">'+OS.requiredPivot+'</div>':'')
+      :'<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem">'
+      +'<div style="font-size:12px;color:var(--txt3)">Run Idea Validator to score your idea and start your briefing</div>'
+      +'<button onclick="autoRunTool(\'validate\')" style="background:var(--sur);color:var(--txt2);border:1px solid var(--bdr2);padding:6px 14px;border-radius:99px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0">Run &rarr;</button>'
+      +'</div>'
     )
+    +'</div>'
+
     +section('Threat Analysis','#FCA5A5',
       OS.fatalFlaw?'<strong style="color:#FCA5A5">Fatal flaw:</strong> '+OS.fatalFlaw+(OS.brutalTruth?'<br><br>'+OS.brutalTruth.slice(0,200):''): null,
       'kill','Kill My Idea')
