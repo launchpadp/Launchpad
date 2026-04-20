@@ -4361,6 +4361,28 @@ function clearSessionHistory() {
 }
 // ── END SESSION HISTORY ───────────────────────────────────
 
+
+function shareBriefing() {
+  var shareData = {
+    idea: OS.ideaShort || (OS.idea||'').slice(0,100),
+    score: OS.score,
+    verdict: OS.verdict,
+    brutalTruth: OS.brutalTruth ? OS.brutalTruth.slice(0,200) : null,
+    requiredPivot: OS.requiredPivot ? OS.requiredPivot.slice(0,200) : null
+  };
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+  var url = 'https://trylaunchpad.co/?briefing='+encoded;
+  navigator.clipboard.writeText(url).then(function(){
+    var msg = document.createElement('div');
+    msg.style.cssText='position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--ink2);border:1px solid var(--bdr2);color:var(--txt);padding:10px 20px;border-radius:99px;font-size:13px;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4)';
+    msg.textContent = 'Briefing link copied to clipboard!';
+    document.body.appendChild(msg);
+    setTimeout(function(){msg.remove();},2500);
+  }).catch(function(){
+    prompt('Copy your briefing link:', url);
+  });
+}
+
 // ── INIT ─────────────────────────────────────────────
 renderHome();
 renderFAQ();
