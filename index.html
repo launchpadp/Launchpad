@@ -973,7 +973,7 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
     <p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:.5rem">Stay in the loop</p>
     <h3 style="font-family:'Instrument Serif',serif;font-size:1.75rem;color:#fff;margin-bottom:.5rem">Get founder insights weekly</h3>
     <p style="font-size:14px;color:var(--txt2);font-weight:300;margin-bottom:1.5rem">Tools, tactics, and brutal truths for founders. No fluff. No spam.</p>
-    <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script><div style="overflow:hidden;max-width:480px;margin:0 auto;border-radius:99px"><iframe src="https://subscribe-forms.beehiiv.com/0a8d85a2-ffca-4636-8a06-d5be9145b8e8" class="beehiiv-embed" data-test-id="beehiiv-embed" frameborder="0" scrolling="no" style="width:100%;height:200px;margin-top:-80px;border:none;display:block"></iframe></div>
+    <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script><div style="max-width:520px;margin:0 auto"><iframe src="https://subscribe-forms.beehiiv.com/0a8d85a2-ffca-4636-8a06-d5be9145b8e8" class="beehiiv-embed" data-test-id="beehiiv-embed" frameborder="0" scrolling="no" style="width:100%;height:52px;border:none;display:block;border-radius:99px"></iframe></div>
   </div>
 </div>
 <!-- FINAL CTA -->
@@ -2350,7 +2350,13 @@ async function runK(){
     saveOutput('Kill My Idea','🔪',idea,txt);
     attachRefine('kres','Kill My Idea',idea,txt);
     var killLines=txt.split('\n').filter(function(l){return l.trim().length>20;});
-    if(killLines.length>0) saveChain('fatalFlaw',killLines[0].replace(/[*#]/g,'').trim().slice(0,150));
+    if(killLines.length>0) {
+      var flaw = killLines[0].replace(/[*#]/g,'').trim().slice(0,150);
+      saveChain('fatalFlaw',flaw);
+      OS.fatalFlaw = flaw;
+      if(!OS.completedTools.includes('kill')) OS.completedTools.push('kill');
+      saveOS();
+    }
     setTimeout(function(){ renderNextStep(mget('lastVerdict')||'Promising','kill','kres'); },800);
   }catch(e){const m=document.getElementById('km');if(m)m.textContent='Something went wrong.';}
   btn.disabled=false;ic.className='';ic.textContent='→';
@@ -4192,7 +4198,7 @@ function updateFounderBriefing() {
     +'<div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.625rem">Journey progress</div>'
     +'<div style="display:flex;align-items:center;gap:0">'+phaseHtml+'</div>'
     +'</div>'
-    +(OS.score !== null && OS.score !== undefined?
+    +(OS.score || OS.fatalFlaw || OS.verdict?
       '<div style="padding:1rem 1.25rem;border-top:1px solid var(--bdr)">'
       +'<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">'
       +'<div style="font-family:serif;font-size:2.5rem;color:'+(OS.score>=70?'#4ADE80':OS.score>=50?'#60A5FA':'#FCA5A5')+';line-height:1">'+OS.score+'</div>'
