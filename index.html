@@ -2048,6 +2048,7 @@ async function runG(){
     document.getElementById('gres').style.display='block';
     const b=document.getElementById('cpBtn');if(b)b.onclick=()=>cpLastOut(b);
     attachRefine('gres','GTM Strategy Builder',idea,txt);
+    setTimeout(function(){ renderNextStep(mget('lastVerdict')||'Promising','gtm','gres'); },800);
   }catch(e){const m=document.getElementById('gm');if(m)m.textContent='Something went wrong.';}
   ld('gbtn','gi','gm',false,'','');
 }
@@ -2091,6 +2092,7 @@ async function runF10(){
     document.getElementById('f10res').style.display='block';
     const b=document.getElementById('cpBtn');if(b)b.onclick=function(){cpLastOut(b);};
     attachRefine('f10res','First 10 Customers',idea,txt);
+    setTimeout(function(){ renderNextStep(mget('lastVerdict')||'Promising','first10','f10res'); },800);
   }catch(e){const m=document.getElementById('f10m');if(m)m.textContent='Something went wrong - try again.';}
   ld('f10btn','f10i','f10m',false,'','');
 }
@@ -2167,43 +2169,45 @@ async function runK(){
   document.getElementById('kres').style.display='none';
   try{
     const txt=await ai(
-    'You are the most respected startup analyst alive. Your job is not to be brutal for its own sake. Your job is to find the specific, real reasons this business will fail given this founder, this budget, and this market - and tell them the truth before they waste a year of their life.\n\n'
+    'You are the most respected startup analyst alive. You have just seen the Idea Validator results for this business. Now you are going deeper — not a fresh analysis, but a surgical breakdown of the specific weaknesses already identified.\n\n'
     +'RULES:\n'
-    +'- Be precise, not harsh. Vague criticism is useless. Name the exact mechanism of failure.\n'
-    +'- Reference real companies, real market dynamics, real failure patterns.\n'
-    +'- If the idea has merit, say so. If it does not, say why with specifics.\n'
-    +'- The 30-day proof test must be binary and measurable. Not "get feedback." Get X paying customers at $Y.\n'
+    +'- Reference the validator score and verdict directly in your opening line.\n'
+    +'- If a fatal flaw was already identified, dig deeper into it — explain the exact mechanism of failure.\n'
+    +'- Name real competitors and explain specifically why users stay loyal to them.\n'
+    +'- The 30-day test must be binary and specific — exact metric, exact timeline, exact pass/fail condition.\n'
+    +'- The required pivot must be a materially different business model, not a minor adjustment.\n'
     +getContextPrompt()
+    +getChainContext()
     +'Mode: '+val('katt')+'\n\n'
     +'OUTPUT:\n\n'
+    +'VERDICT: [Bad idea / Needs major pivot / Worth pursuing] — one sentence on why given the validator score\n\n'
     +'SURVIVAL PROBABILITY: [X]%\n'
-    +'[One sentence. The specific reason for this number. Reference a real comparable company or market dynamic.]\n\n'
+    +'[Why this number. Reference the validator score and what it missed.]\n\n'
     +'THE FATAL FLAW\n'
-    +'[The single biggest reason this fails. Name the exact mechanism. Reference real competition or market data. Be specific enough that they cannot dismiss it.]\n\n'
+    +'[The single mechanism that kills this. Named competitors. Real market data. Specific enough they cannot dismiss it.]\n\n'
     +'THE ASSUMPTION THAT KILLS IT\n'
-    +'[The one thing they believe that is probably wrong. The assumption that, if false, makes the entire model collapse.]\n\n'
-    +'WHAT WILL KILL THIS FAST\n'
-    +'1. [Risk]: [Exact mechanism + timeline to failure]\n'
-
-    +'2. [Risk]: [Exact mechanism + timeline to failure]\n'
-
-    +'3. [Risk]: [Exact mechanism + timeline to failure]\n'
-
-    +'4. [Risk]: [Exact mechanism + timeline to failure]\n'
-
-    +'5. [Risk]: [Exact mechanism + timeline to failure]\n\n'
+    +'[The one belief they hold that is probably wrong. If false, the whole model collapses.]\n\n'
+    +'5 SPECIFIC DEATH SCENARIOS\n'
+    +'1. [Risk + exact timeline + how it kills the business]\n'
+    +'2. [Risk + exact timeline]\n'
+    +'3. [Risk + exact timeline]\n'
+    +'4. [Risk + exact timeline]\n'
+    +'5. [Risk + exact timeline]\n\n'
     +'THE 30-DAY PROOF TEST\n'
-    +'[One experiment. Binary. If [specific measurable outcome] happens within 30 days, the core assumption is validated. If not, stop. Make it impossible to rationalize a false positive.]\n\n'
-    +'THE PIVOT THAT MIGHT WORK\n'
-    +'[A specific variation with materially better odds. Not a consolation prize. A real alternative worth considering, with the specific reason it improves the odds.]\n\n'
-    +'UNFAIR ADVANTAGE MOVES\n'
-    +'[4 moves that give them the best shot if they build anyway. Specific to this market and this budget. Non-obvious. High leverage.]'
+    +'[One experiment. Binary. If X happens in 30 days, validated. If not, stop. Impossible to rationalize a false positive.]\n\n'
+    +'THE PIVOT THAT ACTUALLY WORKS\n'
+    +'[A specific variation with materially better odds. Real reason why it improves the model.]\n\n'
+    +'YOUR UNFAIR ADVANTAGE MOVES\n'
+    +'[4 moves that give them the best shot. Non-obvious. Specific to this market and budget.]'
     +'\n\nIdea: "'+idea+'"',1800);
     lastOut=txt;
     document.getElementById('kres').innerHTML='<div style="background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--r);padding:1.4rem 1.5rem;margin-top:.875rem"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#FCA5A5;font-weight:600;margin-bottom:.875rem">Kill My Idea - Devil\'s Advocate Report</div><div style="font-size:13px;line-height:1.9;color:var(--txt2);white-space:pre-line;font-weight:300">'+txt.trim()+'</div></div><div class="shr" style="margin-top:9px;background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.18);color:#FCA5A5"><span>Your brutal honest feedback</span><button class="cbtn" style="color:#FCA5A5" id="cpBtn">Copy</button></div>';
     document.getElementById('kres').style.display='block';
     const b=document.getElementById('cpBtn');if(b)b.onclick=()=>cpLastOut(b);
     attachRefine('kres','Kill My Idea',idea,txt);
+    var killLines=txt.split('\n').filter(function(l){return l.trim().length>20;});
+    if(killLines.length>0) saveChain('fatalFlaw',killLines[0].replace(/[*#]/g,'').trim().slice(0,150));
+    setTimeout(function(){ renderNextStep(mget('lastVerdict')||'Promising','kill','kres'); },800);
   }catch(e){const m=document.getElementById('km');if(m)m.textContent='Something went wrong.';}
   btn.disabled=false;ic.className='';ic.textContent='→';
 }
