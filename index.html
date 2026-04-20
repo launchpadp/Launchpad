@@ -1440,8 +1440,11 @@ function getStageConfig(stage) {
 function renderDash(){
   loadOS();
   loadSessionOutputs();
-  updateFounderBriefing();
-  renderSessionHistory();
+  // Small delay to ensure OS is fully loaded before rendering
+  setTimeout(function(){
+    updateFounderBriefing();
+    renderSessionHistory();
+  }, 50);
   if(!user){go('home');return;}
   var n=user.name.split(' ')[0];
   var dg=document.getElementById('dgreet');
@@ -4143,7 +4146,11 @@ function autoRunTool(toolId) {
 // ── FOUNDER BRIEFING ──────────────────────────────────────
 function updateFounderBriefing() {
   var el = document.getElementById('founderBriefing');
-  if(!el) return;
+  if(!el) {
+    // Element not ready yet - retry
+    setTimeout(updateFounderBriefing, 100);
+    return;
+  }
 
   // Reload OS from localStorage to ensure freshest data
   try {
