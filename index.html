@@ -7,7 +7,7 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); 
+  gtag('js', new Date());
   gtag('config', 'G-8VWKPQGP9S');
 </script>
 <meta name="google-site-verification" content="8QUMMBR3G1RpCMsF1_w1FEZQnC4musVWx3rUjOKOfcU">
@@ -793,6 +793,27 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           Analyze my idea
         </button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:.75rem;flex-wrap:wrap">
+        <select id="heroIndustry" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:7px 16px;font-size:12px;color:rgba(255,255,255,.6);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer">
+          <option value="">Select industry (optional)</option>
+          <optgroup label="Technology"><option>SaaS / Software</option><option>AI / Machine Learning</option><option>Marketplace</option><option>Mobile App</option><option>Developer Tools</option><option>Cybersecurity</option></optgroup>
+          <optgroup label="Healthcare"><option>Healthcare / MedTech</option><option>Mental Health</option><option>Biotech / Pharma</option><option>Fitness & Wellness</option></optgroup>
+          <optgroup label="Finance"><option>Fintech</option><option>Insurance / InsurTech</option><option>Real Estate / PropTech</option></optgroup>
+          <optgroup label="Commerce"><option>E-commerce</option><option>Consumer Products</option><option>Food & Beverage</option><option>Fashion & Apparel</option></optgroup>
+          <optgroup label="Industry & Physical World"><option>Agriculture / AgTech</option><option>Construction / ConTech</option><option>Manufacturing</option><option>Energy / CleanTech</option><option>Transportation / Logistics</option><option>Supply Chain</option></optgroup>
+          <optgroup label="Services"><option>Education / EdTech</option><option>Legal / LegalTech</option><option>HR / Future of Work</option><option>Marketing / AdTech</option><option>Media & Entertainment</option><option>Travel & Hospitality</option><option>Non-profit / Social Impact</option></optgroup>
+          <option>Other</option>
+        </select>
+        <select id="heroStage" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:7px 16px;font-size:12px;color:rgba(255,255,255,.6);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer">
+          <option value="">Select stage (optional)</option>
+          <option>Just an idea</option>
+          <option>Early validation</option>
+          <option>MVP built</option>
+          <option>Some customers</option>
+        </select>
+      </div>
+      <div style="display:none">
       </div>
       <p style="font-size:12px;color:var(--txt3);margin-top:.75rem;text-align:center;font-weight:300">No sign-up required &middot; Free to start &middot; Results in 30 seconds</p>
     </div>
@@ -3950,6 +3971,8 @@ async function runHeroValidator() {
     return;
   }
 
+  var heroInd = (document.getElementById('heroIndustry')||{}).value || '';
+  var heroStg = (document.getElementById('heroStage')||{}).value || '';
   // Save idea to OS
   setOSIdea(idea);
 
@@ -3988,6 +4011,8 @@ async function runHeroValidator() {
     var raw = await ai(
       'ONLY valid JSON. No markdown. Brutally honest startup investor.\n'
       +'Idea: "'+idea+'"\n'
+      +(heroInd?'Industry: '+heroInd+'. Reference real incumbents, funding landscape, and customer acquisition channels specific to '+heroInd+'.\n':'')
+      +(heroStg?'Stage: '+heroStg+'\n':'')
       +getContextPrompt()
       +'JSON: {"score":<1-100>,"verdict":"Strong Go"|"Promising"|"Needs Work"|"High Risk",'
       +'"verdictReason":<brutal one sentence>,"marketSize":"Small"|"Medium"|"Large"|"Massive",'
