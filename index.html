@@ -692,6 +692,23 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
 .email-sub-btn{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;padding:11px 22px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 0 14px var(--bglow);transition:all .2s;white-space:nowrap}
 .email-sub-btn:hover{box-shadow:0 0 24px var(--bglow)}
 .email-success{font-size:13px;color:#4ADE80;margin-top:.75rem;display:none}
+
+/* ── HERO IDEA INPUT ─────────────────────────────────── */
+.hero-input-wrap{width:100%}
+.hero-idea-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--rxl);padding:1.1rem 1.4rem;padding-right:160px;font-size:15px;color:#fff;font-family:'DM Sans',sans-serif;font-weight:300;resize:none;outline:none;line-height:1.6;transition:border .2s;box-sizing:border-box}
+.hero-idea-input:focus{border-color:rgba(37,99,235,.5);background:rgba(255,255,255,.08)}
+.hero-idea-input::placeholder{color:rgba(255,255,255,.3)}
+.hero-run-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:7px;white-space:nowrap;box-shadow:0 0 20px var(--bglow);transition:all .2s}
+.hero-run-btn:hover{box-shadow:0 0 30px var(--bglow);transform:translateY(-50%) scale(1.02)}
+.hero-run-btn:disabled{opacity:.5;cursor:not-allowed}
+.hero-loading{text-align:center;padding:2rem 0}
+.hero-loading-inner{display:inline-flex;flex-direction:column;align-items:center}
+.hero-spinner{width:36px;height:36px;border:2px solid rgba(37,99,235,.2);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}
+.hero-loading-steps{display:flex;flex-direction:column;gap:4px;margin-top:.75rem}
+.hls-item{font-size:11px;color:var(--txt3);display:flex;align-items:center;gap:6px;transition:color .3s}
+.hls-item.done{color:#4ADE80}
+.hls-item.active{color:var(--acc)}
+@media(max-width:600px){.hero-idea-input{padding-right:1.4rem;padding-bottom:3.5rem}.hero-run-btn{right:12px;top:auto;bottom:12px;transform:none}.hero-run-btn:hover{transform:scale(1.02)}}
 .mobnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(7,9,15,.96);backdrop-filter:blur(20px);border-top:1px solid var(--bdr);padding:.5rem 0}
 .mn-inner{display:flex;justify-content:space-around}
 .mni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;cursor:pointer;color:var(--txt3);transition:color .2s;font-size:10px;font-weight:500}
@@ -738,28 +755,71 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
 <div class="page active" id="page-home">
 
 <!-- HERO -->
-<div class="hero">
+<div class="hero" id="heroSection">
   <div class="hero-inner">
-    <div class="hbadge hero-badge-anim" style="animation-delay:.0s"><span class="hpulse"></span>AI Toolkit for Entrepreneurs</div>
-    <h1 style="font-family:'Instrument Serif',serif;font-size:clamp(2.8rem,6.5vw,5.2rem);color:#fff;line-height:1.05;letter-spacing:-.025em;margin-bottom:1.25rem">
-      <span class="hero-word" style="animation-delay:.1s">Stop</span>
-      <span class="hero-word" style="animation-delay:.22s">guessing.</span>
+    <div class="hbadge hero-badge-anim" style="animation-delay:.0s"><span class="hpulse"></span>Founder Execution OS</div>
+    <h1 style="font-family:'Instrument Serif',serif;font-size:clamp(2.8rem,6.5vw,5.2rem);color:#fff;line-height:1.05;letter-spacing:-.025em;margin-bottom:1rem">
+      <span class="hero-word" style="animation-delay:.1s">Enter</span>
+      <span class="hero-word" style="animation-delay:.22s">your</span>
+      <span class="hero-word" style="animation-delay:.34s">idea.</span>
       <br>
-      <span class="hero-word" style="animation-delay:.38s">Start</span>
-      <span class="hero-word em-word" style="animation-delay:.52s;font-style:italic">building</span>
-      <span class="hero-word" style="animation-delay:.66s">what</span>
-      <span class="hero-word" style="animation-delay:.78s">works.</span>
+      <span class="hero-word em-word" style="animation-delay:.48s;font-style:italic">Everything</span>
+      <span class="hero-word" style="animation-delay:.60s">else</span>
+      <span class="hero-word" style="animation-delay:.72s">follows.</span>
     </h1>
-    <p class="hsub hero-sub-anim" style="animation-delay:.95s">Validate ideas, write pitches, find your first customers &mdash; everything a founder needs, powered by AI.</p>
-    <div class="hbtns hero-btns-anim" style="animation-delay:1.1s">
-      <button class="btn-p" onclick="scrollTo2('war-room-s')">Decide your next move in 60 seconds &rarr;</button>
-      <button class="btn-g" onclick="scrollTo2('demo-s')">See how it works</button>
+    <p class="hero-sub hero-badge-anim" style="animation-delay:.3s;margin-bottom:2rem">One idea. Ten specialist tools. A complete founder strategy — built automatically as you go.</p>
+
+    <!-- HERO IDEA INPUT -->
+    <div class="hero-input-wrap hero-badge-anim" id="heroInputWrap" style="animation-delay:.5s">
+      <div style="position:relative;max-width:680px;margin:0 auto">
+        <textarea
+          id="heroIdea"
+          class="hero-idea-input"
+          placeholder="Describe your startup idea in a sentence or two..."
+          rows="3"
+          onkeydown="handleHeroEnter(event)"
+        ></textarea>
+        <button class="hero-run-btn" id="heroRunBtn" onclick="runHeroValidator()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          Analyze my idea
+        </button>
+      </div>
+      <p style="font-size:12px;color:var(--txt3);margin-top:.75rem;text-align:center;font-weight:300">No sign-up required &middot; Free to start &middot; Results in 30 seconds</p>
     </div>
-    <div class="hstats hero-stats-anim" style="animation-delay:1.25s">
-      <div><span class="hsnum" id="founderCount">3,400+</span><span class="hslbl">Founders using Launchpad</span></div>
-      <div><span class="hsnum">10</span><span class="hslbl">AI-powered tools</span></div>
-      <div><span class="hsnum">Free</span><span class="hslbl">To get started</span></div>
-      <div><span class="hsnum">$14.99</span><span class="hslbl">Pro/month</span></div>
+
+    <!-- HERO LOADING STATE -->
+    <div class="hero-loading" id="heroLoading" style="display:none;max-width:680px;margin:0 auto">
+      <div class="hero-loading-inner">
+        <div class="hero-spinner"></div>
+        <div id="heroLoadingMsg" style="font-size:14px;color:var(--txt2);font-weight:300;margin-top:1rem">Analyzing your idea...</div>
+        <div class="hero-loading-steps" id="heroLoadingSteps"></div>
+      </div>
+    </div>
+
+    <!-- HERO RESULT (inline, no modal) -->
+    <div id="heroResult" style="display:none;max-width:760px;margin:1.5rem auto 0;text-align:left"></div>
+
+    <!-- HERO SIGN-UP PROMPT (appears after result) -->
+    <div id="heroSignupPrompt" style="display:none;max-width:680px;margin:1.5rem auto 0;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:var(--rxl);padding:1.25rem 1.5rem;text-align:center">
+      <div style="font-size:15px;color:#fff;font-weight:500;margin-bottom:.375rem">Save your results and continue your journey</div>
+      <div style="font-size:13px;color:var(--txt2);font-weight:300;margin-bottom:1rem">Sign up free to unlock Kill My Idea, First 10 Customers, and your complete Founder Briefing.</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button onclick="showAuth('signup')" style="background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border:none;padding:10px 24px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 0 14px var(--bglow)">Create free account &rarr;</button>
+        <button onclick="showAuth('login')" style="background:var(--sur);color:var(--txt);border:1px solid var(--bdr2);padding:10px 20px;border-radius:99px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Sign in</button>
+      </div>
+    </div>
+
+    <div class="hero-stats reveal" style="margin-top:2.5rem;display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap">
+      <div style="text-align:center"><div class="hnum">3,400+</div><div class="hlbl">Founders</div></div>
+      <div style="width:1px;height:32px;background:var(--bdr)"></div>
+      <div style="text-align:center"><div class="hnum">10</div><div class="hlbl">Specialist tools</div></div>
+      <div style="width:1px;height:32px;background:var(--bdr)"></div>
+      <div style="text-align:center"><div class="hnum">Free</div><div class="hlbl">To get started</div></div>
+    </div>
+
+    <div style="margin-top:1.5rem;text-align:center">
+      <span style="font-size:12px;color:var(--txt3)">or </span>
+      <button onclick="go('war-room-s')" style="background:none;border:none;color:var(--txt2);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline;text-underline-offset:3px">Launch War Room — 5 analyses in 60 seconds</button>
     </div>
   </div>
 </div>
@@ -1011,6 +1071,8 @@ footer{position:relative;z-index:1;background:rgba(0,0,0,.4);border-top:1px soli
   <div class="dash-inner">
     <div class="dsb" id="dsb"></div>
     <div class="dmain">
+  <!-- FOUNDER BRIEFING -->
+  <div id="founderBriefing" style="margin-bottom:1.5rem"></div>
       <div class="dgreet" id="dgreet">Welcome back</div>
       <div class="dsub" id="dsub">Your AI toolkit is ready.</div>
       <div class="dtier" id="dtier"></div>
@@ -1338,6 +1400,7 @@ function getStageConfig(stage) {
 }
 
 function renderDash(){
+  updateFounderBriefing();
   if(!user){go('home');return;}
   var n=user.name.split(' ')[0];
   var dg=document.getElementById('dgreet');
@@ -1490,6 +1553,8 @@ function saveContext() {
 }
 
 function getForm(id,mem){
+  // Auto-fill idea from OS/CHAIN if not provided
+  if(!mem) mem = getAutoFillIdea();
   const memNote=mem?'<div style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:var(--r);padding:.625rem .875rem;margin-bottom:1rem;font-size:12px;color:rgba(196,181,253,.85);display:flex;align-items:center;gap:8px"><svg width="13" height="13" viewBox="0 0 24 24" stroke="#C4B5FD" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Using context from your last session: <strong style="color:#C4B5FD">"'+mem.slice(0,45)+(mem.length>45?'...':'')+'"</strong></div>':'';
   const sharedTA=(fid,ph)=>'<div class="field"><div class="fl">Your business idea</div><textarea id="'+fid+'" placeholder="'+ph+'">'+(mem||'')+'</textarea></div>';
   if(id==='validate')return getContextBar()+`
@@ -3728,11 +3793,383 @@ function renderChainContext(toolName) {
 loadChain();
 // ── END CONTEXT CHAIN ─────────────────────────────────────
 
+
+// ── FOUNDER OS STATE ──────────────────────────────────────
+var OS = {
+  idea: '',
+  ideaShort: '',
+  score: null,
+  verdict: null,
+  fatalFlaw: null,
+  brutalTruth: null,
+  requiredPivot: null,
+  targetCustomer: null,
+  strengths: [],
+  risks: [],
+  primaryChannel: null,
+  gtmChannel: null,
+  revenueModel: null,
+  pitchHook: null,
+  raiseVerdict: null,
+  completedTools: [],
+  journeyStep: 0,
+  sessionTs: null
+};
+
+function saveOS() {
+  try { localStorage.setItem('lp_os', JSON.stringify(OS)); } catch(e){}
+}
+
+function loadOS() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('lp_os')||'{}');
+    Object.assign(OS, saved);
+    // Also sync with old CHAIN system
+    if(OS.score) { CHAIN.score=OS.score; CHAIN.verdict=OS.verdict; CHAIN.fatalFlaw=OS.fatalFlaw; }
+  } catch(e){}
+}
+
+function setOSIdea(idea) {
+  OS.idea = idea;
+  OS.ideaShort = idea.length > 60 ? idea.slice(0,57)+'...' : idea;
+  OS.sessionTs = Date.now();
+  mset('lastIdea', idea);
+  saveOS();
+}
+
+function getAutoFillIdea() {
+  return OS.idea || mget('lastIdea') || CHAIN.idea || '';
+}
+
+// ── HERO VALIDATOR ────────────────────────────────────────
+var heroLoadingSteps = [
+  'Reading your idea...',
+  'Scanning the market...',
+  'Identifying key risks...',
+  'Calculating viability score...',
+  'Building your briefing...'
+];
+
+function handleHeroEnter(e) {
+  if(e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    runHeroValidator();
+  }
+}
+
+async function runHeroValidator() {
+  var idea = document.getElementById('heroIdea').value.trim();
+  if(!idea || idea.length < 10) {
+    var ta = document.getElementById('heroIdea');
+    if(ta) { ta.style.borderColor='rgba(239,68,68,.5)'; setTimeout(function(){ta.style.borderColor='';},2000); }
+    return;
+  }
+
+  // Save idea to OS
+  setOSIdea(idea);
+
+  // Show loading
+  var wrap = document.getElementById('heroInputWrap');
+  var loading = document.getElementById('heroLoading');
+  var result = document.getElementById('heroResult');
+  var btn = document.getElementById('heroRunBtn');
+
+  if(wrap) wrap.style.display='none';
+  if(loading) loading.style.display='block';
+  if(result) { result.style.display='none'; result.innerHTML=''; }
+
+  // Animate loading steps
+  var stepsEl = document.getElementById('heroLoadingSteps');
+  var msgEl = document.getElementById('heroLoadingMsg');
+  var stepIndex = 0;
+  var stepTimer = setInterval(function() {
+    if(stepIndex < heroLoadingSteps.length) {
+      if(msgEl) msgEl.textContent = heroLoadingSteps[stepIndex];
+      if(stepsEl) {
+        var item = document.createElement('div');
+        item.className = 'hls-item active';
+        item.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' + heroLoadingSteps[stepIndex];
+        stepsEl.appendChild(item);
+        // Mark previous as done
+        var items = stepsEl.querySelectorAll('.hls-item');
+        if(items.length > 1) items[items.length-2].className = 'hls-item done';
+      }
+      stepIndex++;
+    }
+  }, 600);
+
+  try {
+    // Run validator with the idea
+    var raw = await ai(
+      'ONLY valid JSON. No markdown. Brutally honest startup investor.\n'
+      +'Idea: "'+idea+'"\n'
+      +getContextPrompt()
+      +'JSON: {"score":<1-100>,"verdict":"Strong Go"|"Promising"|"Needs Work"|"High Risk",'
+      +'"verdictReason":<brutal one sentence>,"marketSize":"Small"|"Medium"|"Large"|"Massive",'
+      +'"competition":"Low"|"Moderate"|"High"|"Very High","summary":<2 sentences>,'
+      +'"targetCustomer":<specific person description>,"strengths":[<3 specific>],'
+      +'"risks":[<3 specific with competitors>],"competitors":[<3 name+why stay>],'
+      +'"nextSteps":[<2 specific 48hr actions>],"brutalTruth":<why this fails>,'
+      +'"requiredPivot":<condition for success>}'
+    ).catch(function(){ return null; });
+
+    clearInterval(stepTimer);
+
+    var d = null;
+    try { d = JSON.parse((raw||'').replace(/```json|```/g,'').trim()); } catch(e){}
+
+    if(!d || !d.score) throw new Error('Parse failed');
+
+    // Save to OS and CHAIN
+    OS.score = d.score; OS.verdict = d.verdict; OS.fatalFlaw = d.risks&&d.risks[0]?d.risks[0]:null;
+    OS.brutalTruth = d.brutalTruth; OS.requiredPivot = d.requiredPivot;
+    OS.targetCustomer = d.targetCustomer; OS.strengths = d.strengths||[]; OS.risks = d.risks||[];
+    if(!OS.completedTools.includes('validate')) OS.completedTools.push('validate');
+    saveOS();
+    mset('lastScore',d.score); mset('lastVerdict',d.verdict); mset('lastMarket',d.marketSize);
+    saveChain('idea',idea); saveChain('score',d.score); saveChain('verdict',d.verdict);
+    saveChain('fatalFlaw',d.risks&&d.risks[0]?d.risks[0]:null);
+    saveChain('brutalTruth',d.brutalTruth); saveChain('requiredPivot',d.requiredPivot);
+    saveChain('targetCustomer',d.targetCustomer);
+
+    // Build result HTML
+    var PAL = {'Strong Go':['rgba(34,197,94,.1)','rgba(34,197,94,.25)','#4ADE80'],
+               'Promising':['rgba(96,165,250,.1)','rgba(96,165,250,.25)','#60A5FA'],
+               'Needs Work':['rgba(245,158,11,.1)','rgba(245,158,11,.25)','#FCD34D'],
+               'High Risk':['rgba(239,68,68,.1)','rgba(239,68,68,.25)','#FCA5A5']};
+    var p = PAL[d.verdict]||PAL['Promising'];
+    var html = '<div style="background:linear-gradient(135deg,'+p[0]+',rgba(0,0,0,0));border:1px solid '+p[1]+';border-radius:var(--rxl);overflow:hidden">';
+    html += '<div style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">';
+    html += '<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:'+p[2]+'">Idea Validator · Your Founder Briefing starts here</span>';
+    html += '<button onclick="updateBriefingAndContinue()" style="background:'+p[2]+';color:#000;border:none;padding:6px 16px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer">Continue journey &rarr;</button>';
+    html += '</div>';
+    html += '<div style="padding:1.5rem;display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;flex-wrap:wrap">';
+    html += '<div style="text-align:center;min-width:100px"><div style="font-family:serif;font-size:4rem;color:'+p[2]+';line-height:1" id="hScoreNum">0</div>';
+    html += '<div style="font-size:10px;color:var(--txt3);margin-top:2px">/100 score</div>';
+    html += '<div style="margin-top:8px;background:'+p[0]+';border:1px solid '+p[1]+';color:'+p[2]+';font-size:11px;font-weight:600;padding:4px 12px;border-radius:99px;white-space:nowrap">'+d.verdict+'</div></div>';
+    html += '<div><div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.65;margin-bottom:.75rem">'+d.verdictReason+'</div>';
+    html += '<div style="display:flex;gap:12px;flex-wrap:wrap"><span style="font-size:11px;color:var(--txt3)">Market: <strong style="color:var(--txt)">'+d.marketSize+'</strong></span>';
+    html += '<span style="font-size:11px;color:var(--txt3)">Competition: <strong style="color:var(--txt)">'+d.competition+'</strong></span></div></div>';
+    html += '</div>';
+    if(d.brutalTruth) {
+      html += '<div style="padding:1rem 1.5rem;background:rgba(239,68,68,.06);border-top:1px solid rgba(239,68,68,.12)">';
+      html += '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#FCA5A5;margin-bottom:.375rem">Brutal Truth</div>';
+      html += '<div style="font-size:12px;color:rgba(255,200,200,.85);line-height:1.65">'+d.brutalTruth+'</div></div>';
+    }
+    if(d.requiredPivot) {
+      html += '<div style="padding:1rem 1.5rem;background:rgba(34,197,94,.05);border-top:1px solid rgba(34,197,94,.1)">';
+      html += '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4ADE80;margin-bottom:.375rem">Required Pivot</div>';
+      html += '<div style="font-size:12px;color:rgba(180,255,200,.85);line-height:1.65">'+d.requiredPivot+'</div></div>';
+    }
+    // Next step recommendation
+    var nextTool = d.score >= 70 ? {id:'first10',label:'Find your first 10 customers',reason:'Your idea scored strong. Skip the kill test — go find real customers today.'}
+                 : d.score >= 50 ? {id:'kill',label:'Kill My Idea — find the fatal flaw',reason:'Good score but not perfect. Find what could kill this before you build.'}
+                 : {id:'kill',label:'Kill My Idea — full breakdown',reason:'High risk score. You need to understand the exact mechanism of failure before going further.'};
+    html += '<div style="padding:1rem 1.5rem;background:rgba(37,99,235,.08);border-top:1px solid rgba(37,99,235,.15);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">';
+    html += '<div><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);margin-bottom:.25rem">Next step in your journey</div>';
+    html += '<div style="font-size:13px;font-weight:500;color:#fff;margin-bottom:.2rem">'+nextTool.label+'</div>';
+    html += '<div style="font-size:11px;color:var(--txt2)">'+nextTool.reason+'</div></div>';
+    html += '<button onclick="autoRunTool(\''+nextTool.id+'\')" style="background:var(--blue);color:#fff;border:none;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0">Run now &rarr;</button>';
+    html += '</div></div>';
+
+    if(loading) loading.style.display='none';
+    if(result) { result.innerHTML=html; result.style.display='block'; }
+
+    // Animate score
+    setTimeout(function(){
+      var sn=document.getElementById('hScoreNum');
+      if(sn){var cur=0;var target=d.score;var inc=setInterval(function(){cur+=3;if(cur>=target){cur=target;clearInterval(inc);}sn.textContent=cur;},18);}
+    },200);
+
+    // Show sign-up prompt after 3 seconds if not logged in
+    if(!user) {
+      setTimeout(function(){
+        var sp=document.getElementById('heroSignupPrompt');
+        if(sp) sp.style.display='block';
+      }, 3000);
+    }
+
+    // Scroll to result
+    setTimeout(function(){ if(result) result.scrollIntoView({behavior:'smooth',block:'start'}); },200);
+
+    // Update briefing
+    updateFounderBriefing();
+
+  } catch(err) {
+    clearInterval(stepTimer);
+    if(loading) loading.style.display='none';
+    if(wrap) wrap.style.display='block';
+    if(result) { result.style.display='block'; result.innerHTML='<div style="color:var(--txt2);font-size:13px;padding:.75rem;text-align:center">Something went wrong — try again</div>'; }
+    console.error('Hero validator error:', err);
+  }
+}
+
+function updateBriefingAndContinue() {
+  updateFounderBriefing();
+  if(user) { go('dashboard'); }
+  else { showAuth('signup'); }
+}
+
+// Auto-run next tool (pre-filled, instant)
+function autoRunTool(toolId) {
+  var idea = getAutoFillIdea();
+  mset('lastIdea', idea);
+  openTool(toolId);
+  // After modal opens, auto-trigger the run button
+  setTimeout(function() {
+    var runFns = {
+      'validate': runV, 'kill': runK, 'gtm': runG,
+      'first10': runF10, 'pitch': runP, 'funding': runFund,
+      'bizplan': runB, 'email': runE, 'landing': runLanding
+    };
+    if(runFns[toolId]) {
+      setTimeout(function(){ runFns[toolId](); }, 800);
+    }
+  }, 300);
+}
+// ── END HERO VALIDATOR ────────────────────────────────────
+
+
+// ── FOUNDER BRIEFING ──────────────────────────────────────
+function updateFounderBriefing() {
+  var el = document.getElementById('founderBriefing');
+  if(!el) return;
+
+  var idea = OS.idea || getAutoFillIdea() || '';
+  var ideaShort = idea.length > 80 ? idea.slice(0,77)+'...' : idea;
+
+  // Phase progress
+  var completed = OS.completedTools || [];
+  var phases = [
+    {name:'Understand', tools:['validate','kill'], color:'#60A5FA'},
+    {name:'Find', tools:['first10','compare'], color:'#FBBF24'},
+    {name:'Build', tools:['gtm','bizplan'], color:'#C4B5FD'},
+    {name:'Pitch', tools:['pitch','email','funding'], color:'#4ADE80'}
+  ];
+
+  var phaseHtml = phases.map(function(ph) {
+    var done = ph.tools.filter(function(t){ return completed.includes(t); }).length;
+    var total = ph.tools.length;
+    var pct = done/total;
+    return '<div style="text-align:center;flex:1">'
+      +'<div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">'+ph.name+'</div>'
+      +'<div style="height:3px;background:var(--bdr);border-radius:99px;overflow:hidden">'
+      +'<div style="width:'+Math.round(pct*100)+'%;height:100%;background:'+ph.color+';border-radius:99px;transition:width .5s ease"></div>'
+      +'</div>'
+      +'<div style="font-size:10px;color:'+ph.color+';margin-top:3px">'+done+'/'+total+'</div>'
+      +'</div>';
+  }).join('<div style="width:1px;background:var(--bdr);margin:0 .5rem;align-self:stretch"></div>');
+
+  function section(title, color, content, toolId, toolLabel) {
+    if(content) {
+      return '<div style="border-top:1px solid var(--bdr);padding:1rem 1.25rem">'
+        +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:'+color+';margin-bottom:.625rem">'+title+'</div>'
+        +'<div style="font-size:12px;color:var(--txt2);line-height:1.7;font-weight:300">'+content+'</div>'
+        +'</div>';
+    } else {
+      return '<div style="border-top:1px solid var(--bdr);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem">'
+        +'<div><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3);margin-bottom:.25rem">'+title+'</div>'
+        +'<div style="font-size:12px;color:var(--txt3);font-weight:300">Run '+toolLabel+' to unlock this section</div>'
+        +'</div>'
+        +'<button onclick="autoRunTool(\''+toolId+'\')" style="background:var(--sur);color:var(--txt2);border:1px solid var(--bdr2);padding:6px 14px;border-radius:99px;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0">Run &rarr;</button>';
+        +'</div>';
+    }
+  }
+
+  // Next 3 actions
+  var actions = [];
+  if(!completed.includes('validate')) actions.push('Run Idea Validator to score your idea');
+  else if(!completed.includes('kill') && OS.score < 70) actions.push('Run Kill My Idea to find your fatal flaw');
+  else if(!completed.includes('first10')) actions.push('Run First 10 Customers — find who buys today');
+  else if(!completed.includes('gtm')) actions.push('Run GTM Strategy — build your acquisition machine');
+  else if(!completed.includes('pitch')) actions.push('Run Pitch Assassin — stress-test your investor pitch');
+  if(OS.requiredPivot) actions.push('Execute required pivot: '+OS.requiredPivot.slice(0,80));
+  if(OS.primaryChannel) actions.push('Start outreach on: '+OS.primaryChannel.slice(0,80));
+  while(actions.length < 3) actions.push('Complete more tools to unlock specific actions');
+  actions = actions.slice(0,3);
+
+  var actionsHtml = actions.map(function(a,i){
+    return '<div style="display:flex;gap:10px;padding:.375rem 0;align-items:flex-start">'
+      +'<div style="width:18px;height:18px;background:linear-gradient(135deg,var(--blue),var(--blue2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px">'+(i+1)+'</div>'
+      +'<div style="font-size:12px;color:var(--txt2);line-height:1.6;font-weight:300">'+a+'</div>'
+      +'</div>';
+  }).join('');
+
+  el.innerHTML =
+    '<div style="background:var(--ink2);border:1px solid var(--bdr2);border-radius:var(--rxl);overflow:hidden">'
+    +'<div style="padding:1rem 1.25rem;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
+    +'<div>'
+    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);margin-bottom:2px">Founder Briefing</div>'
+    +(ideaShort?'<div style="font-size:13px;color:#fff;font-weight:400">'+ideaShort+'</div>':'<div style="font-size:13px;color:var(--txt3)">No idea yet — start below</div>')
+    +'</div>'
+    +'<button onclick="shareBriefing()" style="background:var(--sur);color:var(--txt2);border:1px solid var(--bdr2);padding:6px 14px;border-radius:99px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px">Share</button>';
+    +'</div>'
+    +'<div style="padding:.875rem 1.25rem;border-bottom:1px solid var(--bdr)">'
+    +'<div style="font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.625rem">Journey progress</div>'
+    +'<div style="display:flex;align-items:center;gap:0">'+phaseHtml+'</div>'
+    +'</div>'
+    +(OS.score?
+      '<div style="padding:1rem 1.25rem;border-top:1px solid var(--bdr)">'
+      +'<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">'
+      +'<div style="font-family:serif;font-size:2.5rem;color:'+(OS.score>=70?'#4ADE80':OS.score>=50?'#60A5FA':'#FCA5A5')+';line-height:1">'+OS.score+'</div>'
+      +'<div><div style="font-size:10px;color:var(--txt3)">Viability Score</div><div style="font-size:13px;font-weight:500;color:#fff">'+OS.verdict+'</div></div>'
+      +'</div>'
+      +'</div>':
+      section('Idea Intelligence','var(--acc)',null,'validate','Idea Validator')
+    )
+    +section('Threat Analysis','#FCA5A5',
+      OS.fatalFlaw?'<strong style="color:#FCA5A5">Fatal flaw:</strong> '+OS.fatalFlaw+(OS.brutalTruth?'<br><br>'+OS.brutalTruth.slice(0,200):''): null,
+      'kill','Kill My Idea')
+    +section('Customer Intelligence','#FBBF24',
+      OS.targetCustomer?OS.targetCustomer+(OS.primaryChannel?'<br><br><strong style="color:#FBBF24">Primary channel:</strong> '+OS.primaryChannel.slice(0,120):''): null,
+      'first10','First 10 Customers')
+    +section('Go-to-Market','#C4B5FD',
+      OS.gtmChannel?OS.gtmChannel.slice(0,200): null,
+      'gtm','GTM Strategy')
+    +section('Revenue Model','#60A5FA',
+      OS.revenueModel?OS.revenueModel.slice(0,200): null,
+      'bizplan','Revenue Model')
+    +section('Pitch & Fundraising','#4ADE80',
+      OS.pitchHook?OS.pitchHook.slice(0,200): null,
+      'pitch','Pitch Assassin')
+    +'<div style="padding:1rem 1.25rem;border-top:1px solid var(--bdr);background:rgba(37,99,235,.04)">'
+    +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);margin-bottom:.625rem">Next 3 Actions</div>'
+    +actionsHtml
+    +'</div>'
+    +'</div>';
+}
+
+function shareBriefing() {
+  // Encode key OS data into a shareable URL hash
+  var shareData = {
+    idea: OS.ideaShort || OS.idea.slice(0,100),
+    score: OS.score,
+    verdict: OS.verdict,
+    fatalFlaw: OS.fatalFlaw ? OS.fatalFlaw.slice(0,100) : null,
+    brutalTruth: OS.brutalTruth ? OS.brutalTruth.slice(0,200) : null,
+    requiredPivot: OS.requiredPivot ? OS.requiredPivot.slice(0,200) : null,
+    v: 1
+  };
+  var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+  var url = 'https://trylaunchpad.co/?briefing='+encoded;
+  navigator.clipboard.writeText(url).then(function(){
+    var msg = document.createElement('div');
+    msg.style.cssText='position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--ink2);border:1px solid var(--bdr2);color:var(--txt);padding:10px 20px;border-radius:99px;font-size:13px;z-index:999;white-space:nowrap';
+    msg.textContent = 'Briefing link copied!';
+    document.body.appendChild(msg);
+    setTimeout(function(){msg.remove();},2500);
+  }).catch(function(){
+    prompt('Copy your briefing link:', url);
+  });
+}
+// ── END FOUNDER BRIEFING ──────────────────────────────────
+
 // ── INIT ─────────────────────────────────────────────
 renderHome();
 renderFAQ();
 updateNav();
 checkFounderAccess();
+loadOS();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeTool();closeAuth();}});
 </script>
 <!-- STICKY CTA -->
