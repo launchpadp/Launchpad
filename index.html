@@ -1566,7 +1566,56 @@ function getForm(id,mem){
     </div>
     <div class="field"><div class="fl">Your business idea</div><textarea id="vid" placeholder="Describe your idea — what it does, who it's for, the problem it solves..."></textarea></div>
     <div class="g2">
-      <div class="field"><div class="fl">Industry</div><select id="vind"><option value="">Any</option><option>SaaS</option><option>E-commerce</option><option>Marketplace</option><option>Healthcare</option><option>Fintech</option><option>Food &amp; Bev</option><option>Education</option><option>Other</option></select></div>
+      <div class="field"><div class="fl">Industry</div><select id="vind">
+<option value="">Any industry</option>
+<optgroup label="Technology">
+<option>SaaS / Software</option>
+<option>AI / Machine Learning</option>
+<option>Marketplace</option>
+<option>Mobile App</option>
+<option>Developer Tools</option>
+<option>Cybersecurity</option>
+<option>Web3 / Crypto</option>
+</optgroup>
+<optgroup label="Healthcare & Life Sciences">
+<option>Healthcare / MedTech</option>
+<option>Mental Health</option>
+<option>Biotech / Pharma</option>
+<option>Fitness & Wellness</option>
+<option>Elder Care</option>
+</optgroup>
+<optgroup label="Finance">
+<option>Fintech</option>
+<option>Insurance / InsurTech</option>
+<option>Real Estate / PropTech</option>
+<option>Investment / Wealth</option>
+</optgroup>
+<optgroup label="Commerce & Consumer">
+<option>E-commerce</option>
+<option>Consumer Products</option>
+<option>Food & Beverage</option>
+<option>Fashion & Apparel</option>
+<option>Beauty & Personal Care</option>
+</optgroup>
+<optgroup label="Industry & Physical World">
+<option>Agriculture / AgTech</option>
+<option>Construction / ConTech</option>
+<option>Manufacturing</option>
+<option>Energy / CleanTech</option>
+<option>Transportation / Logistics</option>
+<option>Supply Chain</option>
+</optgroup>
+<optgroup label="Services & Media">
+<option>Education / EdTech</option>
+<option>Legal / LegalTech</option>
+<option>HR / Future of Work</option>
+<option>Marketing / AdTech</option>
+<option>Media & Entertainment</option>
+<option>Travel & Hospitality</option>
+<option>Non-profit / Social Impact</option>
+</optgroup>
+<option>Other</option>
+</select></div>
       <div class="field"><div class="fl">Stage</div><select id="vstg"><option value="">Any</option><option>Just an idea</option><option>Early validation</option><option>MVP built</option><option>Some customers</option></select></div>
     </div>
     <div class="srow"><button class="brun" id="vbtn" onclick="runV()"><span id="vi">&rarr;</span> Validate my idea</button><span class="stm" id="vm"></span></div>
@@ -1906,7 +1955,7 @@ async function runV(){
   mset('lastIdea',idea);
   const isPro=can('pro');
   try{
-    const raw=(await ai('ONLY valid JSON. No markdown. Brutally honest startup investor. Clear stance required. Specific to this exact idea.\nIdea: "'+idea+'"'+(val('vind')?'\nIndustry: '+val('vind'):'')+(val('vstg')?'\nStage: '+val('vstg'):'')+'\n'+getContextPrompt()+'JSON only: {"score":<1-100>,"verdict":"Strong Go"|"Promising"|"Needs Work"|"High Risk","verdictReason":<one brutal sentence>,"marketSize":"Small"|"Medium"|"Large"|"Massive","competition":"Low"|"Moderate"|"High"|"Very High","summary":<2 sentences with brutal truth>,"targetCustomer":<exact person>,"strengths":[<3 specific>],"risks":[<3 specific with named competitors>],"competitors":[<3-4 name+why users stay>],"nextSteps":[<2 specific 48hr actions>],"brutalTruth":<why this fails>,"requiredPivot":<condition for success>}')).replace(/```json|```/g,'').trim();
+    const raw=(await ai('ONLY valid JSON. No markdown. Brutally honest startup investor. Clear stance required. Specific to this exact idea.\nIdea: "'+idea+'"'+(val('vind')?'\nIndustry: '+val('vind')+'\nINDUSTRY CONTEXT: You must evaluate this idea through the specific lens of the '+val('vind')+' industry. Reference real dynamics, real incumbents, real funding landscape, real customer acquisition channels, and real regulatory or infrastructure constraints specific to '+val('vind')+'. Do not give generic startup advice — give advice that only makes sense for this exact industry.':'')+(val('vstg')?'\nStage: '+val('vstg'):'')+'\n'+getContextPrompt()+'JSON only: {"score":<1-100>,"verdict":"Strong Go"|"Promising"|"Needs Work"|"High Risk","verdictReason":<one brutal sentence>,"marketSize":"Small"|"Medium"|"Large"|"Massive","competition":"Low"|"Moderate"|"High"|"Very High","summary":<2 sentences with brutal truth>,"targetCustomer":<exact person>,"strengths":[<3 specific>],"risks":[<3 specific with named competitors>],"competitors":[<3-4 name+why users stay>],"nextSteps":[<2 specific 48hr actions>],"brutalTruth":<why this fails>,"requiredPivot":<condition for success>}')).replace(/```json|```/g,'').trim();
     if(timers)timers.forEach(t=>clearTimeout(t));
     const d=JSON.parse(raw);
     mset('lastScore',d.score);mset('lastVerdict',d.verdict);mset('lastMarket',d.marketSize);
