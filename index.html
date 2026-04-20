@@ -3622,7 +3622,7 @@ function renderNextStep(verdict, completedTool, containerId) {
   var el = document.getElementById(containerId);
   if(!el) return;
   
-  el.insertAdjacentHTML('afterend',
+  var mb2=document.getElementById('toolBody');if(mb2) mb2.insertAdjacentHTML('beforeend',
     '<div id="nextStepBanner" style="margin-top:1rem;background:linear-gradient(135deg,rgba(37,99,235,.12),rgba(139,92,246,.06));border:1px solid rgba(37,99,235,.25);border-radius:var(--rl);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">'
     +'<div>'
     +'<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);margin-bottom:.25rem">Next step in your journey</div>'
