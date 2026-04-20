@@ -1526,6 +1526,15 @@ function openTool(id){
   }
   document.getElementById('toolMo').classList.add('open');
   document.body.style.overflow='hidden';
+  // Auto-fill idea textarea after form loads
+  var autoIdea = getAutoFillIdea();
+  if(autoIdea) {
+    var fields = ['vid','kid','gid','f10id','pid','fund-id','bpid','eid','lid'];
+    fields.forEach(function(fid) {
+      var el = document.getElementById(fid);
+      if(el && !el.value) el.value = autoIdea;
+    });
+  }
 }
 function closeTool(){document.getElementById('toolMo').classList.remove('open');document.body.style.overflow='';}
 function closeBgT(e){if(e.target===document.getElementById('toolMo'))closeTool();}
