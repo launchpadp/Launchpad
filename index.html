@@ -1914,6 +1914,7 @@ async function runV(){
 
     document.getElementById('vres').innerHTML=html;
     document.getElementById('vres').style.display='block';
+    setTimeout(function(){ renderNextStep(d.verdict||'Promising','validate','vres'); }, 800);
     setTimeout(()=>{
       // Animate score bar
       const g=document.getElementById('gf');if(g)g.style.width=d.score+'%';
